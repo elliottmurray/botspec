@@ -3,21 +3,21 @@ lib = File.expand_path("../lib", __FILE__)
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 require "botspec/version"
 
-Gem::Specification.new do |spec|
-  spec.name          = "botspec"
-  spec.version       = Botspec::VERSION
-  spec.authors       = ["Elliott Murray"]
-  spec.email         = ["elliottmurray@gmail.com"]
+Gem::Specification.new do |gem|
+  gem.name          = "botspec"
+  gem.version       = Botspec::VERSION
+  gem.authors       = ["Elliott Murray"]
+  gem.email         = ["elliottmurray@gmail.com"]
 
-  spec.summary       = %q{Acceptance tests for bots}
-  spec.description   = %q{Acceptance tests for bots}
-  spec.homepage      = "TODO: Put your gem's website or public repo URL here."
-  spec.license       = "MIT"
+  gem.summary       = %q{Acceptance tests for bots}
+  gem.description   = %q{Acceptance tests for bots}
+  gem.homepage      = "TODO: Put your gem's website or public repo URL here."
+  gem.license       = "MIT"
 
   # Prevent pushing this gem to RubyGems.org. To allow pushes either set the 'allowed_push_host'
   # to allow pushing to a single host or delete this section to allow pushing to any host.
-  if spec.respond_to?(:metadata)
-    spec.metadata["allowed_push_host"] = "TODO: Set to 'http://mygemserver.com'"
+  if gem.respond_to?(:metadata)
+    gem.metadata["allowed_push_host"] = "TODO: Set to 'http://mygemserver.com'"
   else
     raise "RubyGems 2.0 or newer is required to protect against " \
       "public gem pushes."
@@ -25,14 +25,19 @@ Gem::Specification.new do |spec|
 
   # Specify which files should be added to the gem when it is released.
   # The `git ls-files -z` loads the files in the RubyGem that have been added into git.
-  spec.files         = Dir.chdir(File.expand_path('..', __FILE__)) do
+  gem.files         = Dir.chdir(File.expand_path('..', __FILE__)) do
     `git ls-files -z`.split("\x0").reject { |f| f.match(%r{^(test|spec|features)/}) }
   end
-  spec.bindir        = "exe"
-  spec.executables   = spec.files.grep(%r{^exe/}) { |f| File.basename(f) }
-  spec.require_paths = ["lib"]
+  gem.bindir        = "exe"
+  gem.executables   = gem.files.grep(%r{^exe/}) { |f| File.basename(f) }
+  gem.require_paths = ["lib"]
 
-  spec.add_development_dependency "bundler", "~> 1.16"
-  spec.add_development_dependency "rake", "~> 10.0"
-  spec.add_development_dependency "rspec", "~> 3.0"
+  gem.add_runtime_dependency "rspec", "~> 3.0"
+  gem.add_runtime_dependency 'term-ansicolor', '~> 1.0'
+  gem.add_runtime_dependency 'aws-sdk'
+
+  gem.add_development_dependency "bundler", "~> 1.16"
+
+  gem.add_development_dependency "rake", "~> 10.0"
+  gem.add_development_dependency "byebug"
 end

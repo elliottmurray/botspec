@@ -1,5 +1,7 @@
-require "botspec/version"
 
-module Botspec
-  # Your code goes here...
+require 'botspec/lex/lex_service.rb'
+require 'botspec/version'
+
+module BotSpec
+
 end

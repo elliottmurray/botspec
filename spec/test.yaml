@@ -1,0 +1,31 @@
+description: "Hospital miss-selection tests"
+
+tests:
+
+  - what: "User means update contact details"
+    dialog:
+      - "how can I update my contact details?"
+      - "Great thanks, please enter your name."
+      - "William Theodosi"
+      - "Great thanks, just to confirm, you wish to update your phone number, is that right?"
+
+  - what: "User means sales"
+    dialog:
+      - "HI there! I have just come back from overseas and have recently moved house and realised that my policy has been cancelled.  Am I able to please sign up again? :)"
+      - "Great thanks, please enter your name."
+      - "samantha findley"
+      - "Are you an existing customer?"
+      - "yes"
+      - "Thanks for that. I'm going to pass you over to one of my team mates now (they're human!). Please tap the button below and wait to be connected, they will have all of the information we just discussed"
+
+  - what: "User means sales"
+    dialog:
+      - "Hi"
+      - "Great thanks, please enter your name."
+      - "Margareth Haunga"
+      - "Great thanks! I can help direct you to the right place if you type words like: \"claims\" or \"payments\" or \"tax\". If you want to chat to a real person just let me know. How can I help you?"
+      - "I am checking on my policy"
+      - "Are you an existing customer?"
+      - "yes"
+      - "Thanks for that. I'm going to pass you over to one of my team mates now (they're human!). Please tap the button below and wait to be connected, they will have all of the information we just discussed"
+
