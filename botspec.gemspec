@@ -35,6 +35,7 @@ Gem::Specification.new do |gem|
   gem.add_runtime_dependency "rspec", "~> 3.0"
   gem.add_runtime_dependency 'term-ansicolor', '~> 1.0'
   gem.add_runtime_dependency 'aws-sdk'
+  gem.add_runtime_dependency 'thor'
 
   gem.add_development_dependency "bundler", "~> 1.16"
 

@@ -10,26 +10,31 @@ module BotSpec
     end
 
     def initialize(dialog_file)
-      @interactions = YAML.load_file(dialog_file)
+      @specs= YAML.load_file(dialog_file)
     end
 
-    def interactions
-      return @interactions['tests'].collect{ |interaction|
-        BotSpec::Interaction.new(interaction)
+    def dialogs
+      return @specs['dialogs'].collect{ |dialog|
+        BotSpec::Dialog.new(dialog)
       }
     end
   end
 
-  class Interaction
+  class Dialog
     attr_reader :what, :steps
 
-    def initialize(interaction)
-      @what = interaction['what']
-      @dialog = interaction['dialog']
+    def initialize(dialog)
+      @what = dialog['what']
+      @interactions = dialog['dialog']
     end
 
-    def dialog
-      return @dialog
+    def name
+      @what
     end
+
+    def interactions
+      @interactions
+    end
+
   end
 end

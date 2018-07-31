@@ -5,6 +5,7 @@ PATH
       aws-sdk
       rspec (~> 3.0)
       term-ansicolor (~> 1.0)
+      thor
 
 GEM
   remote: https://rubygems.org/
@@ -617,6 +618,7 @@ GEM
     rspec-support (3.7.1)
     term-ansicolor (1.6.0)
       tins (~> 1.0)
+    thor (0.20.0)
     tins (1.16.3)
 
 PLATFORMS

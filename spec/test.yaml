@@ -1,6 +1,6 @@
 description: "Hospital miss-selection tests"
 
-tests:
+dialogs:
 
   - what: "User means update contact details"
     dialog:
