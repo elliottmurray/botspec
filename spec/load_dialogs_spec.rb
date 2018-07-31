@@ -4,7 +4,7 @@ require 'load_dialogs.rb'
 RSpec.describe 'load yaml file' do
 
   before(:each) {
-    @specs = BotSpec::LoadDialogs.load('./spec/test.yaml')
+    @specs = BotSpec::Load.load('./spec/test.yaml')
   }
 
   it 'loads a single file and breaks down dialogs' do
