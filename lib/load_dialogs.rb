@@ -1,21 +1,15 @@
 require 'yaml'
 
-module BotSpec
-  module Load
-    def self.load(dialog_file)
-      return LoadDialogs.new(dialog_file)
-    end
-  end
-end
-
 class LoadDialogs
 
-  def initialize(dialog_file)
-    @specs= YAML.load_file(dialog_file)
-  end
+#  def initialize(dialog_file)
+#    @specs= YAML.load_file(dialog_file)
+#  end
 
-  def dialogs
-    return @specs['dialogs'].collect{ |dialog|
+  def self.load_dialogs dialog_file
+
+    dialogs = YAML.load_file(dialog_file)
+    return dialogs['dialogs'].collect{ |dialog|
       Dialog.new(dialog)
     }
   end

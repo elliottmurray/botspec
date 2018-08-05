@@ -7,13 +7,12 @@ require 'load_dialogs.rb'
 module BotSpec
 
   class CLI < Thor
-    include BotSpec::Load
 
     desc 'verify', "Verify a chat suite"
     method_option :dialogs, aliases: "-f", desc: "Yaml file containing dialogs", :required => true
 
     def verify(dialogs)
-      BotSpec::Load.load(dialogs).dialogs.each{ |dialog|
+      LoadDialogs.load_dialogs(dialogs).each{ |dialog|
         run_spec(dialog)
       }
 
