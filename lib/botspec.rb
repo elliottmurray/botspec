@@ -13,12 +13,19 @@ module BotSpec
 
     def verify(dialogs)
       LoadDialogs.load_dialogs(dialogs).each{ |dialog|
-        run_spec(dialog)
+        run_dialog(dialog)
       }
 
     end
 
-    def run_spec(dialog)
+    def lex_chat
+      @lex_chat ||= LexChat.new()
+    end
+
+    def run_dialog(dialog)
+      dialog.interactions.each { |interaction|
+        lex_chat().submit_interaction(interaction)
+      }
 
     end
 

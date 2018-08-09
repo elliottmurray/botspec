@@ -1,4 +1,5 @@
 require 'yaml'
+require 'hashie'
 
 class LoadDialogs
 
@@ -9,7 +10,10 @@ class LoadDialogs
   def self.load_dialogs dialog_file
 
     dialogs = YAML.load_file(dialog_file)
-    return dialogs['dialogs'].collect{ |dialog|
+    dialogs = Hashie.symbolize_keys dialogs
+    #dialogs = dialogs.inject({}){|memo,(k,v)| memo[k.to_sym] = v; memo}
+
+    return dialogs[:dialogs].collect{ |dialog|
       Dialog.new(dialog)
     }
   end
@@ -19,8 +23,8 @@ class Dialog
   attr_reader :what, :steps
 
   def initialize(dialog)
-    @what = dialog['what']
-    @interactions = dialog['dialog']
+    @what = dialog[:what]
+    @interactions = dialog[:dialog]
   end
 
   def name
