@@ -9,34 +9,37 @@ module BotSpec
 
       def initialize(config)
         @config = config
-        lex_region = config[:region] || 'us-east-1:w'
+        @user_id = "pizza-chat-#{SecureRandom.uuid}"
+        
         #
         #@credentials = AWS::CognitoIdentityCredentials.new({
         #  IdentityPoolId: "#{lexRegion}:#{poolId}"
         #});
 
-        @lex_client = Aws::Lex.new(
-           region: ENV["LEX_FAQ_AWS_REGION"],
-           access_key_id: ENV["LEX_FAQ_AWS_ACCESS_ID"],
-           secret_access_key: ENV["LEX_FAQ_AWS_SECRET_ACCESS_KEY"])
-
-      #  @lex = AWS::Lex.new({
-      #  })
-
-
-
+        @lex_client ||= Aws::Lex::Client.new
+         
       end
+
+      def interaction_to_lex_message(message)
+        return {
+          bot_name: "PizzaOrderingBot", # required
+          bot_alias: "$LATEST", # required
+          user_id: @user_id, # required
+          session_attributes: {
+            "String" => "String",
+          },
+          request_attributes: {
+            "String" => "String",
+          },
+          input_text: message, # required
+        }
+      end
+
       def post_message message, user_id
-
-      resp = @lex_client.post_text({
-        bot_name: Lex::Bot::NAME,
-        bot_alias: Lex::Bot::VERSION,
-        user_id: user_id,
-        session_attributes: {},
-        input_text: message
-      })
-
-    sleep(1);
+        puts message
+        resp = @lex_client.post_text(interaction_to_lex_message(message))
+        puts resp
+        sleep(1);
       end
     end
   end
