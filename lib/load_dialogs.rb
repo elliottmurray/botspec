@@ -46,8 +46,19 @@ class Dialog
   end
 
   def run_dialog()
-    interactions().each { |interaction|
-      lex_chat().post_message(interaction, 'user_id')
-    }
+    submit_interaction @interactions      
+  end
+
+  def submit_interaction(interactions)
+    return if interactions.size == 0
+
+    resp = lex_chat().post_message(interactions[0], 'user_id')
+
+    if(resp['message'] != interactions[1])
+      puts "#{interactions[1]} not matched with #{resp['message']}"
+    else
+
+      submit_interaction(interactions.drop(2))
+    end
   end
 end
