@@ -7,7 +7,12 @@ RSpec.describe 'load yaml file' do
   describe :load_dialogs do
 
     before(:each) {
-      @dialogs = LoadDialogs.load_dialogs('./spec/test.yaml')
+
+      @mock_aws = double('aws mock')
+      allow(@mock_aws).to receive(:post_message)
+      allow_any_instance_of(Dialog).to receive(:lex_chat).and_return(@mock_aws)
+
+      @dialogs = LoadDialogs.run_dialogs('./spec/test.yaml')
     }
 
     it 'loads a single file and breaks down dialogs' do

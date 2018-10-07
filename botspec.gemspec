@@ -11,7 +11,7 @@ Gem::Specification.new do |gem|
 
   gem.summary       = %q{Acceptance tests for bots}
   gem.description   = %q{Acceptance tests for bots}
-  gem.homepage      = "TODO: Put your gem's website or public repo URL here."
+  gem.homepage      = "https://github.com/elliottmurray/botspec"
   gem.license       = "MIT"
 
   # Prevent pushing this gem to RubyGems.org. To allow pushes either set the 'allowed_push_host'

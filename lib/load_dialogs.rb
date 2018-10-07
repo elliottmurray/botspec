@@ -1,16 +1,13 @@
 require 'yaml'
 require 'hashie'
 require 'botspec/lex/lex_service.rb'
+require 'rspec'
 
+require "bundler/setup"
 
 class LoadDialogs
 
-#  def initialize(dialog_file)
-#    @specs= YAML.load_file(dialog_file)
-#  end
-
   def self.run_dialogs dialog_file
-
     dialogs = YAML.load_file(dialog_file)
     dialogs = Hashie.symbolize_keys dialogs
     #dialogs = dialogs.inject({}){|memo,(k,v)| memo[k.to_sym] = v; memo}
@@ -26,7 +23,6 @@ end
 class Dialog
   attr_reader :what, :steps
 
-  
   def initialize(dialog)
     @what = dialog[:what]
     @interactions = dialog[:dialog]
@@ -53,6 +49,13 @@ class Dialog
     return if interactions.size == 0
 
     resp = lex_chat().post_message(interactions[0], 'user_id')
+
+    describe 'blah' do
+
+      it 'test' do
+        expect(resp['message']).to eql(interactions[1])
+      end
+    end
 
     if(resp['message'] != interactions[1])
       puts "#{interactions[1]} not matched with #{resp['message']}"

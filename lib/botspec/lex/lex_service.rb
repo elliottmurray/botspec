@@ -9,6 +9,7 @@ module BotSpec
 
       def initialize(config)
         @config = config
+        #todo remove this hardcoded default
         @bot_name = config[:botname] || 'PizzaOrderingBot'
         @user_id = "pizza-chat-#{SecureRandom.uuid}"
         
@@ -17,8 +18,11 @@ module BotSpec
         #  IdentityPoolId: "#{lexRegion}:#{poolId}"
         #});
 
-        @lex_client ||= Aws::Lex::Client.new
          
+      end
+
+      def lex_client
+        @lex_client ||= Aws::Lex::Client.new
       end
 
       def interaction_to_lex_message(message)
@@ -36,8 +40,8 @@ module BotSpec
         }
       end
 
-      def post_message message, user_id
-        resp = @lex_client.post_text(interaction_to_lex_message(message))
+      def post_message message
+        resp = lex_client.post_text(interaction_to_lex_message(message))
         sleep(1);
         resp
       end
