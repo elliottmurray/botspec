@@ -24,6 +24,7 @@ class Dialog
   attr_reader :what, :steps
 
   def initialize(dialog)
+    @describe = dialog[:description]
     @what = dialog[:what]
     @interactions = dialog[:dialog]
   end
@@ -50,18 +51,13 @@ class Dialog
 
     resp = lex_chat().post_message(interactions[0], 'user_id')
 
-    describe 'blah' do
+    ::RSpec.describe @describe do
 
-      it 'test' do
-        expect(resp['message']).to eql(interactions[1])
+      it name do
+        expect(resp[:message]).to eql(interactions[1])
       end
     end
 
-    if(resp['message'] != interactions[1])
-      puts "#{interactions[1]} not matched with #{resp['message']}"
-    else
-
-      submit_interaction(interactions.drop(2))
-    end
+    submit_interaction(interactions.drop(2))
   end
 end
