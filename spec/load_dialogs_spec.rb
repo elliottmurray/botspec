@@ -17,7 +17,7 @@ RSpec.describe 'load yaml file' do
 
       @mock_aws = double('aws mock')
       allow(@mock_aws).to receive(:post_message).and_return({'message': 'response 1'})
-      allow_any_instance_of(Dialog).to receive(:lex_chat).and_return(@mock_aws)
+      allow_any_instance_of(Dialog).to receive(:run_dialog)
 
       @dialogs = LoadDialogs.run_dialogs('./spec/test.yaml')
     }
@@ -30,14 +30,14 @@ RSpec.describe 'load yaml file' do
     it 'first dialog has 2 interactions' do
       dialog = @dialogs[0]
 
-      expect(dialog.interactions.length).to eql(2)
+      expect(dialog.interactions.length).to eql(4)
     end
 
     it 'second dialog has 1 interactionss' do
       dialogs = @dialogs[1]
 
-      expect(dialogs.interactions.length).to eql(6)
-      expect(dialogs.name).to eql 'User means sales'
+      expect(dialogs.interactions.length).to eql(2)
+      expect(dialogs.name).to eql 'the whats2'
     end
   end
 

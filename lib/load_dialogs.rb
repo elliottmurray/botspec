@@ -53,7 +53,7 @@ class Dialog
 
     ::RSpec.describe @describe do
 
-      it name do
+      it interactions[1] do
         expect(resp[:message]).to eql(interactions[1])
       end
     end
