@@ -29,7 +29,9 @@ Gem::Specification.new do |gem|
     `git ls-files -z`.split("\x0").reject { |f| f.match(%r{^(test|spec|features)/}) }
   end
   gem.bindir        = "exe"
-  gem.executables   = gem.files.grep(%r{^exe/}) { |f| File.basename(f) }
+  gem.executables   = gem.files.grep(%r{^bin/}).map{ |f| File.basename(f) }
+
+#  gem.executables   = gem.files.grep(%r{^exe/}) { |f| File.basename(f) }
   gem.require_paths = ["lib"]
 
   gem.add_runtime_dependency "rspec", "~> 3.0"

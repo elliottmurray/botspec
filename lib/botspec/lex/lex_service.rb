@@ -40,7 +40,7 @@ module BotSpec
         }
       end
 
-      def post_message message
+      def post_message message, user_id=''
         resp = lex_client.post_text(interaction_to_lex_message(message))
         sleep(1);
         resp
