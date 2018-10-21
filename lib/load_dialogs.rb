@@ -13,18 +13,18 @@ class LoadDialogs
     #dialogs = dialogs.inject({}){|memo,(k,v)| memo[k.to_sym] = v; memo}
 
     dialogs[:dialogs].collect{ |dialog|
-      Dialog.new(dialog)
-    }.each{ |dialog|
+      Dialog.new(dialogs[:description], dialog)
+    }.collect{ |dialog|
       dialog.run_dialog
-    }
+    }.flatten
   end
 end
 
 class Dialog
   attr_reader :what, :steps
 
-  def initialize(dialog)
-    @describe = dialog[:description]
+  def initialize(description, dialog)
+    @describe = description
     @what = dialog[:what]
     @interactions = dialog[:dialog]
   end
@@ -46,18 +46,23 @@ class Dialog
     submit_interaction @interactions      
   end
 
-  def submit_interaction(interactions)
+  def submit_interaction(interactions, examples=[])
     return if interactions.size == 0
+    
+    @@lex_chat = lex_chat()
+    puts @describe
+    spec = ::RSpec.describe @describe do 
 
-    resp = lex_chat().post_message(interactions[0], 'user_id')
+      it interactions[0] do
+        resp = @@lex_chat.post_message(interactions[0], 'user_id')
 
-    ::RSpec.describe @describe do
-
-      it interactions[1] do
         expect(resp[:message]).to eql(interactions[1])
       end
-    end
+    end 
 
-    submit_interaction(interactions.drop(2))
+    examples << spec 
+    submit_interaction(interactions.drop(2), examples)
+
+    examples
   end
 end
