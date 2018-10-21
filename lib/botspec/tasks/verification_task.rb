@@ -19,8 +19,13 @@ module Botspec
       namespace :botspec do
 
         desc "Verify botspecs #{name}"
-        task "verify:#{name}" do |t, args|
-          BotSpec::BotSpecRunner.run({})
+        task "verify:#{name}", :dialog_path do |t, args|
+          puts args
+          
+          dialogs_path = args[:dialogs_path] 
+          puts dialogs_path
+          puts "!!!!!!"
+          BotSpec::BotSpecRunner.run({dialogs_path: dialogs_path})
 #          config = RSpec.configuration
 #          json_formatter = RSpec::Core::Formatters::JsonFormatter.new(config.output_stream)
 #
