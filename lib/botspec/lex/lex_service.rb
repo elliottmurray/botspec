@@ -10,7 +10,7 @@ module BotSpec
       def initialize(config)
         @config = config
         #todo remove this hardcoded default
-        @bot_name = config[:botname] || 'PizzaOrderingBot'
+        @bot_name = config[:botname] || 'JavaLambdaTestBot'
         @user_id = "pizza-chat-#{SecureRandom.uuid}"
         
         #

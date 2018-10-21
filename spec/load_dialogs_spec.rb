@@ -17,7 +17,7 @@ RSpec.describe 'load yaml file' do
 
       @mock_aws = double('aws mock')
       allow(@mock_aws).to receive(:post_message).and_return({'message': 'response 1'})
-      allow_any_instance_of(Dialog).to receive(:run_dialog)
+      allow_any_instance_of(Dialog).to receive(:create_example_group).and_return(::RSpec.describe('test'))
 
       @dialogs = LoadDialogs.run_dialogs('./spec/test.yaml')
     }
@@ -42,8 +42,9 @@ RSpec.describe 'load yaml file' do
   end
 
   it 'creates a dialog' do
-    dialog = Dialog.new(dialog_hash)
+    dialog = Dialog.new('test description', dialog_hash)
 
+    expect(dialog.describe).to eql('test description')
     expect(dialog.interactions().length).to eql(2)
   end
 end

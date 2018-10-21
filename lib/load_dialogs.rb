@@ -13,15 +13,15 @@ class LoadDialogs
     #dialogs = dialogs.inject({}){|memo,(k,v)| memo[k.to_sym] = v; memo}
 
     dialogs[:dialogs].collect{ |dialog|
-      Dialog.new(dialogs[:description], dialog)
-    }.collect{ |dialog|
-      dialog.run_dialog
-    }.flatten
+      Dialog.new("${dialogs[:description]}  ${dialogs[:what]}", dialog)
+    }.each{ |dialog|
+      dialog.create_example_group
+    }
   end
 end
 
 class Dialog
-  attr_reader :what, :steps
+  attr_reader :what, :steps, :describe
 
   def initialize(description, dialog)
     @describe = description
@@ -42,15 +42,18 @@ class Dialog
     @lex_chat ||= BotSpec::AWS::LexService.new({})
   end
 
-  def run_dialog()
-    submit_interaction @interactions      
+  def create_example_group()
+    @examples = create_example(@interactions).flatten 
   end
 
-  def submit_interaction(interactions, examples=[])
+  def examples
+    @examples
+  end
+
+  def create_example(interactions, examples=[])
     return if interactions.size == 0
-    
+   
     @@lex_chat = lex_chat()
-    puts @describe
     spec = ::RSpec.describe @describe do 
 
       it interactions[0] do
@@ -61,7 +64,7 @@ class Dialog
     end 
 
     examples << spec 
-    submit_interaction(interactions.drop(2), examples)
+    create_example(interactions.drop(2), examples)
 
     examples
   end

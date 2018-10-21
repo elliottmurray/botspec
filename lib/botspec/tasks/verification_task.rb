@@ -20,8 +20,7 @@ module Botspec
 
         desc "Verify botspecs #{name}"
         task "verify:#{name}" do |t, args|
-          puts 'test taskhere '
-
+          BotSpec::BotSpecRunner.run({})
 #          config = RSpec.configuration
 #          json_formatter = RSpec::Core::Formatters::JsonFormatter.new(config.output_stream)
 #
@@ -32,7 +31,6 @@ module Botspec
 #
           # execute rspec runner
           # 'example_spec.rb' is the location of the spec file
-          BotSpec::BotSpecRunner.run({})
 
           # output test result as json
           # see example output in `rspec_json_formatter_result.rb`
@@ -52,8 +50,6 @@ module Botspec
 #          end
 #          BotSpec::RSpec::BotSpecRunner.new().run
 #
-
-          #puts LoadDialogs.run_dialogs('lex/regression_tests/dialogs/intents/claim_enquire.yaml')
         end
       end
     end
