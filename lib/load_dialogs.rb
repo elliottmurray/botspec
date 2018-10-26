@@ -8,6 +8,7 @@ require "bundler/setup"
 class LoadDialogs
 
   def self.run_dialogs dialog_file
+    puts dialog_file
     dialogs = YAML.load_file(dialog_file)
     dialogs = Hashie.symbolize_keys dialogs
     #dialogs = dialogs.inject({}){|memo,(k,v)| memo[k.to_sym] = v; memo}
@@ -43,7 +44,7 @@ class Dialog
   end
 
   def create_example_group()
-    @examples = create_example(@interactions).flatten 
+    @examples = create_example(@interactions).flatten
   end
 
   def examples
@@ -52,18 +53,18 @@ class Dialog
 
   def create_example(interactions, examples=[])
     return if interactions.size == 0
-   
+
     @@lex_chat = lex_chat()
-    spec = ::RSpec.describe @describe do 
+    spec = ::RSpec.describe @describe do
 
       it interactions[0] do
         resp = @@lex_chat.post_message(interactions[0], 'user_id')
 
         expect(resp[:message]).to eql(interactions[1])
       end
-    end 
+    end
 
-    examples << spec 
+    examples << spec
     create_example(interactions.drop(2), examples)
 
     examples
