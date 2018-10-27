@@ -20,13 +20,13 @@ RSpec.describe 'load yaml file' do
                       ]
                     }
 
-      allow(YAML).to receive(:load_file).with('./spec/test.yaml').and_return(test_dialog)
-      allow(YAML).to receive(:load_file).with('./spec/pizza.yaml').and_return(test_dialog2)
+      allow(YAML).to receive(:load_file).with('spec/test.yaml').and_return(test_dialog)
+      #allow(YAML).to receive(:load_file).with('spec/pizza.yaml').and_return(test_dialog2)
       @mock_aws = double('aws mock')
       allow(@mock_aws).to receive(:post_message).and_return({'message': 'response 1'})
       allow_any_instance_of(Dialog).to receive(:create_example_group).and_return(::RSpec.describe('test'))
 
-      @dialogs = LoadDialogs.run_dialogs('botspec_spec', './spec/*')
+      @dialogs = LoadDialogs.run_dialogs('botspec_spec', 'spec/*')
     }
 
     it 'loads a single file and breaks down dialogs' do
@@ -40,7 +40,7 @@ RSpec.describe 'load yaml file' do
       expect(dialog.interactions.length).to eql(4)
     end
 
-    it 'second dialog has 1 interactionss' do
+    it 'second dialog has 1 interactions' do
       dialogs = @dialogs[1]
 
       expect(dialogs.interactions.length).to eql(2)
@@ -49,7 +49,7 @@ RSpec.describe 'load yaml file' do
   end
 
   it 'creates a dialog' do
-    dialog = Dialog.new('test description', dialog_hash)
+    dialog = Dialog.new(describe:  'test description', name: 'my dialog', interactions: dialog_hash)
 
     expect(dialog.describe).to eql('test description')
     expect(dialog.interactions().length).to eql(2)

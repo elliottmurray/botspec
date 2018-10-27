@@ -9,19 +9,18 @@ require 'byebug'
 class LoadDialogs
 
   def self.run_dialogs botname, dialogs_path
-    puts dialogs_path
     @@botname = botname
 
-    dialog_files = Dir["#{dialogs_path}*\[yaml|yml\]"]
-    dialogs = dialog_files.collect{|dialog_file| Hashie.symbolize_keys YAML.load_file(dialog_file)}
+    dialog_paths = Dir["#{dialogs_path}*\[yaml|yml\]"]
+    dialog_yamls = dialog_paths.collect{ |dialog_file| Hashie.symbolize_keys YAML.load_file(dialog_file).merge!(file: dialog_file) }
 
-    dialogs.collect{ |dialog_content|
+    dialog_yamls.collect{ |dialog_content|
       dialog_content[:dialogs].collect{ |dialog|
-        Dialog.new("${dialogs[:description]}  ${dialogs[:what]}", dialog)
+        Dialog.new({describe: dialog_content[:description], name: dialog[:what], interactions:  dialog[:dialog], file: dialog_content[:file]})
       }.each{ |dialog|
         dialog.create_example_group
       }
-    }
+    }.flatten
   end
 
   def self.botname
@@ -30,16 +29,16 @@ class LoadDialogs
 end
 
 class Dialog
-  attr_reader :what, :steps, :describe
+  attr_reader :describe, :name, :interactions, :file
 
-  def initialize(description, dialog)
-    @describe = description
-    @what = dialog[:what]
-    @interactions = dialog[:dialog]
+  def initialize args
+    args.each do |k,v|
+      instance_variable_set("@#{k}", v) unless v.nil?
+    end
   end
 
-  def name
-    @what
+  def file(file)
+    @file = file
   end
 
   def interactions
@@ -64,7 +63,7 @@ class Dialog
 require 'byebug'
 
     @@lex_chat = lex_chat()
-    spec = ::RSpec.describe @describe do
+    spec = ::RSpec.describe "#{@describe} #{@name}" do
 
       it interactions[0] do
 #byebug
