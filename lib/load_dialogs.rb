@@ -12,17 +12,15 @@ class LoadDialogs
     puts dialogs_path
     @@botname = botname
 
-    files = Dir["#{dialogs_path}*\[yaml|yml\]"]
-#byebug
-#
-    dialogs = files.inject{ |acc, file| acc.merge!(YAML.load_file(file)) }
-    puts @@botname
-    dialogs = Hashie.symbolize_keys dialogs
+    dialog_files = Dir["#{dialogs_path}*\[yaml|yml\]"]
+    dialogs = dialog_files.collect{|dialog_file| Hashie.symbolize_keys YAML.load_file(dialog_file)}
 
-    dialogs[:dialogs].collect{ |dialog|
-      Dialog.new("${dialogs[:description]}  ${dialogs[:what]}", dialog)
-    }.each{ |dialog|
-      dialog.create_example_group
+    dialogs.collect{ |dialog_content|
+      dialog_content[:dialogs].collect{ |dialog|
+        Dialog.new("${dialogs[:description]}  ${dialogs[:what]}", dialog)
+      }.each{ |dialog|
+        dialog.create_example_group
+      }
     }
   end
 

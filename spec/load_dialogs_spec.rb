@@ -20,13 +20,13 @@ RSpec.describe 'load yaml file' do
                       ]
                     }
 
-      allow(YAML).to receive(:load_file).with('./specs/test.yaml').and_return(test_dialog)
-      allow(YAML).to receive(:load_file).with('./specs/test2.yaml').and_return(test_dialog2)
+      allow(YAML).to receive(:load_file).with('./spec/test.yaml').and_return(test_dialog)
+      allow(YAML).to receive(:load_file).with('./spec/pizza.yaml').and_return(test_dialog2)
       @mock_aws = double('aws mock')
       allow(@mock_aws).to receive(:post_message).and_return({'message': 'response 1'})
       allow_any_instance_of(Dialog).to receive(:create_example_group).and_return(::RSpec.describe('test'))
 
-      @dialogs = LoadDialogs.run_dialogs('botspec_spec', './specs/*')
+      @dialogs = LoadDialogs.run_dialogs('botspec_spec', './spec/*')
     }
 
     it 'loads a single file and breaks down dialogs' do
