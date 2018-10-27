@@ -10,15 +10,15 @@ module BotSpec
       def initialize(config)
         @config = config
         #todo remove this hardcoded default
-        @bot_name = config[:botname] || 'JavaLambdaTestBot'
+        @bot_name = config[:botname]
         @user_id = "pizza-chat-#{SecureRandom.uuid}"
-        
+
         #
         #@credentials = AWS::CognitoIdentityCredentials.new({
         #  IdentityPoolId: "#{lexRegion}:#{poolId}"
         #});
 
-         
+
       end
 
       def lex_client

@@ -8,7 +8,7 @@ module BotSpec
         config = ::RSpec.configuration
 
       end
-    
+
       def self.run(args, err=$stderr, out=$stdout)
         trap_interrupt
         options = RSpec::Core::ConfigurationOptions.new({})
@@ -22,11 +22,15 @@ module BotSpec
 
 
       def run(args, out, err)
+
+
         setup(err, out)
+
+        botname = args[:botname]
         return @configuration.reporter.exit_early(@configuration.failure_exit_code) if RSpec.world.wants_to_quit
         dialogs_path = args[:dialogs_path]
 
-        run_specs(LoadDialogs.run_dialogs(dialogs_path).map{|dialog| dialog.examples}.flatten).tap do
+        run_specs(LoadDialogs.run_dialogs(botname, dialogs_path).map{|dialog| dialog.examples}.flatten).tap do
           persist_example_statuses
         end
       end

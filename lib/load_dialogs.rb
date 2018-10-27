@@ -7,9 +7,11 @@ require "bundler/setup"
 
 class LoadDialogs
 
-  def self.run_dialogs dialog_file
+  def self.run_dialogs botname, dialog_file
     puts dialog_file
+    @@botname = botname
     dialogs = YAML.load_file(dialog_file)
+    puts @@botname
     dialogs = Hashie.symbolize_keys dialogs
     #dialogs = dialogs.inject({}){|memo,(k,v)| memo[k.to_sym] = v; memo}
 
@@ -18,6 +20,10 @@ class LoadDialogs
     }.each{ |dialog|
       dialog.create_example_group
     }
+  end
+
+  def self.botname
+    @@botname
   end
 end
 
@@ -40,7 +46,7 @@ class Dialog
 
 
   def lex_chat
-    @lex_chat ||= BotSpec::AWS::LexService.new({})
+    @lex_chat ||= BotSpec::AWS::LexService.new({botname: LoadDialogs.botname})
   end
 
   def create_example_group()
@@ -53,11 +59,13 @@ class Dialog
 
   def create_example(interactions, examples=[])
     return if interactions.size == 0
+require 'byebug'
 
     @@lex_chat = lex_chat()
     spec = ::RSpec.describe @describe do
 
       it interactions[0] do
+#byebug
         resp = @@lex_chat.post_message(interactions[0], 'user_id')
 
         expect(resp[:message]).to eql(interactions[1])

@@ -7,7 +7,7 @@ RSpec.describe 'load yaml file' do
   describe :load_dialogs do
 
     before(:each) {
-      test_dialog = {"description"=>"Hospital miss-selection tests", 
+      test_dialog = {"description"=>"Hospital miss-selection tests",
                       "dialogs"=>[
                         {"what"=>"the whats1", "dialog"=> ["test 1", "response 1", "test 2", "response 2"]},
                         {"what"=>"the whats2", "dialog"=> ["test 3", "response 3"]}
@@ -19,11 +19,11 @@ RSpec.describe 'load yaml file' do
       allow(@mock_aws).to receive(:post_message).and_return({'message': 'response 1'})
       allow_any_instance_of(Dialog).to receive(:create_example_group).and_return(::RSpec.describe('test'))
 
-      @dialogs = LoadDialogs.run_dialogs('./spec/test.yaml')
+      @dialogs = LoadDialogs.run_dialogs('botspec_spec', './spec/test.yaml')
     }
 
     it 'loads a single file and breaks down dialogs' do
-      
+
       expect(@dialogs.length).to eql(2)
     end
 

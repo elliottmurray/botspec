@@ -6,7 +6,7 @@ require 'rspec/core/formatters/json_formatter'
 
 module Botspec
   class VerificationTask < ::Rake::TaskLib
-    attr_reader :name
+    attr_reader :name, :dialogs_path
 
     def initialize(name, dialogs_path)
       @name = name
@@ -20,8 +20,9 @@ module Botspec
 
         desc "Verify botspecs #{name}"
         task "verify:#{name}", :dialog_path do |t, args|
-          puts "Running botspecs in #{@dialogs_path}"
-          BotSpec::BotSpecRunner.run({dialogs_path: @dialogs_path})
+          puts "Running botspecs in #{dialogs_path}"
+          BotSpec::BotSpecRunner.run({dialogs_path: dialogs_path, botname: name})
+
 #          config = RSpec.configuration
 #          json_formatter = RSpec::Core::Formatters::JsonFormatter.new(config.output_stream)
 #
