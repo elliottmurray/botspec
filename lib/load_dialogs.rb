@@ -4,16 +4,20 @@ require 'botspec/lex/lex_service.rb'
 require 'rspec'
 
 require "bundler/setup"
+require 'byebug'
 
 class LoadDialogs
 
-  def self.run_dialogs botname, dialog_file
-    puts dialog_file
+  def self.run_dialogs botname, dialogs_path
+    puts dialogs_path
     @@botname = botname
-    dialogs = YAML.load_file(dialog_file)
+
+    files = Dir["#{dialogs_path}*\[yaml|yml\]"]
+#byebug
+#
+    dialogs = files.inject{ |acc, file| acc.merge!(YAML.load_file(file)) }
     puts @@botname
     dialogs = Hashie.symbolize_keys dialogs
-    #dialogs = dialogs.inject({}){|memo,(k,v)| memo[k.to_sym] = v; memo}
 
     dialogs[:dialogs].collect{ |dialog|
       Dialog.new("${dialogs[:description]}  ${dialogs[:what]}", dialog)

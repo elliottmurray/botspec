@@ -1,0 +1,8 @@
+description: "Order pizza test against aws test bot"
+dialogs:
+  - what: "User orders pizza and elicit 2 slots"
+    dialog:
+      - Can I get a medium veg pizza?
+      - Thick or thin crust?
+      - thin
+      - Okay, I have ordered your medium veg pizza on thin crust      

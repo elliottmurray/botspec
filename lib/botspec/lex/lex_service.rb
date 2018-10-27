@@ -9,16 +9,8 @@ module BotSpec
 
       def initialize(config)
         @config = config
-        #todo remove this hardcoded default
         @bot_name = config[:botname]
-        @user_id = "pizza-chat-#{SecureRandom.uuid}"
-
-        #
-        #@credentials = AWS::CognitoIdentityCredentials.new({
-        #  IdentityPoolId: "#{lexRegion}:#{poolId}"
-        #});
-
-
+        @user_id = "botspec-#{SecureRandom.uuid}"
       end
 
       def lex_client
