@@ -21,7 +21,7 @@ RSpec.describe 'load yaml file' do
                     }
 
       allow(YAML).to receive(:load_file).with('spec/fixtures/test.yaml').and_return(test_dialog)
-      #allow(YAML).to receive(:load_file).with('spec/pizza.yaml').and_return(test_dialog2)
+      allow(YAML).to receive(:load_file).with('spec/fixtures/pizza.yaml').and_return(test_dialog2)
       @mock_aws = double('aws mock')
       allow(@mock_aws).to receive(:post_message).and_return({'message': 'response 1'})
       allow_any_instance_of(Dialog).to receive(:create_example_group).and_return(::RSpec.describe('test'))
@@ -61,6 +61,11 @@ RSpec.describe 'load yaml file' do
 
     describe :directory_files do
 
+      subject(:dialogs) {LoadDialogs.run_dialogs('botspec_spec', 'spec/fixtures/**') }
+
+      it 'loads a single file and breaks down dialogs' do
+        expect(dialogs.length).to eql(2)
+      end
 
     end
       
