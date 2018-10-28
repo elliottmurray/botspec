@@ -36,13 +36,16 @@ Gem::Specification.new do |gem|
 
   gem.add_runtime_dependency "rspec", "~> 3.0"
   gem.add_runtime_dependency 'term-ansicolor', '~> 1.0'
-  gem.add_runtime_dependency 'aws-sdk'
-  gem.add_runtime_dependency 'thor'
-  gem.add_runtime_dependency 'hashie'
+  gem.add_runtime_dependency 'aws-sdk', "~> 3.0.1"
+  gem.add_runtime_dependency 'thor', "~> 0.20.0"
+  gem.add_runtime_dependency 'hashie', "~> 3.6.0"
 
   gem.add_development_dependency "bundler", "~> 1.16"
 
   gem.add_development_dependency "guard-rspec", "~> 4.7"
   gem.add_development_dependency "rake", "~> 10.0"
   gem.add_development_dependency "byebug"
+
+  gem.add_development_dependency 'conventional-changelog', '~> 1.3'
+  gem.add_development_dependency 'bump', '~> 0.6.1'
 end
