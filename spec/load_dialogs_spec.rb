@@ -16,7 +16,8 @@ RSpec.describe 'load yaml file' do
       test_dialog2 = {"description"=>"Dentist selection tests",
                       "dialogs"=>[
                         {"what"=>"the whats3", "dialog"=> ["test 21", "response 21", "test 22", "response 22"]},
-                        {"what"=>"the whats4", "dialog"=> ["test 23", "response 23"]}
+                        {"what"=>"the whats4", "dialog"=> ["test 23", "response 23", "test 24", "response 24"]},
+                        {"what"=>"the whats5", "dialog"=> ["test 25", "response 25"]}
                       ]
                     }
 
@@ -63,10 +64,16 @@ RSpec.describe 'load yaml file' do
 
       subject(:dialogs) {LoadDialogs.run_dialogs('botspec_spec', 'spec/fixtures/**') }
 
-      it 'loads a single file and breaks down dialogs' do
-        expect(dialogs.length).to eql(2)
+      it 'loads 2 files and breaks down into 5 dialogs' do
+        expect(dialogs.length).to eql(5)
       end
 
+      it 'third dialog has 2  interactions' do
+        dialog = dialogs[2]
+
+        expect(dialog.interactions.length).to eql(4)
+        expect(dialog.name).to eql 'the whats3'
+      end
     end
       
   end
