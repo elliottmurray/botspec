@@ -11,7 +11,8 @@ class LoadDialogs
   def self.run_dialogs botname, dialogs_path
     @@botname = botname
 
-    dialog_paths = Dir["#{dialogs_path}*\[yaml|yml\]"]
+    dialog_paths = Dir.glob(dialogs_path).select{ |e| File.file? e }
+    #dialog_paths = Dir["#{dialogs_path}*\[yaml|yml\]"]
     dialog_yamls = dialog_paths.collect{ |dialog_file| Hashie.symbolize_keys YAML.load_file(dialog_file).merge!(file: dialog_file) }
 
     dialog_yamls.collect{ |dialog_content|
@@ -60,13 +61,11 @@ class Dialog
 
   def create_example(interactions, examples=[])
     return if interactions.size == 0
-require 'byebug'
 
     @@lex_chat = lex_chat()
     spec = ::RSpec.describe "#{@describe} #{@name}" do
 
       it interactions[0] do
-#byebug
         resp = @@lex_chat.post_message(interactions[0], 'user_id')
 
         expect(resp[:message]).to eql(interactions[1])
