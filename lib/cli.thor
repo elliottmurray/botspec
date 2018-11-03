@@ -10,8 +10,9 @@ class CLI < Thor
   method_option :dialogs, aliases: "-f", desc: "Yaml file containing dialogs", :required => true
   def verify()
     puts options[:dialogs]
+    puts "!!!!!"
     dialogs = options[:dialogs]
-    LoadDialogs.run_dialogs(dialogs)
+    LoadDialogs.run_dialogs('test', dialogs)
   end
 
 end

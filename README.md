@@ -37,6 +37,15 @@ rake release[remote]
 
 Should create a changelog record
 
+## Docker
+You can run the command with:
+```
+docker run -v `pwd`:/app/bot -it botspec thor cli:verify -f specs/simple_dialog.yaml
+```
+
+Assuming you are in your project root directory and your specs are in the corresponding specs folder
+
+
 
 ## Contributing
 
