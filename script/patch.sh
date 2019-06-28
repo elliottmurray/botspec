@@ -1,9 +1,7 @@
 #!/bin/bash
 set -e
 
-echo "release botspec ${PATCH}"
-
-bundle exec bump ${1:-minor} --no-commit
+bundle exec bump ${1:-patch} --no-commit
 #bundle exec appraisal update
 bundle exec rake generate_changelog
 git add lib/botspec/version.rb CHANGELOG.md 
