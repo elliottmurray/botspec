@@ -13,13 +13,16 @@ ENV SPEC_PATH=$SPEC_PATH
 
 RUN gem install bundler thor
 # RUN bundle install --path=/app/bot
-RUN bundle install
+# RUN bundle install
+
+RUN gem install botspec.gemspec
+
+RUN thor install lib/cli.thor --as botspec --force
 
 
+# CMD ["bundle", "exec", "thor", "cli:verify", "--dialogs="]
+CMD ["thor", "cli:verify", "--dialogs="]
 
-RUN bundle exec thor install lib/cli.thor --as botspec --force 
-
-
-
-CMD ["bundle", "exec", "thor", "cli", "--dialogs="]
+#ENTRYPOINT ["bundle", "exec", "thor", "cli:verify", "--dialogs="]
 # CMD sh
+
