@@ -77,4 +77,26 @@ RSpec.describe 'load yaml file' do
     end
       
   end
+
+  describe :create_example do
+
+    before(:each) do
+
+    end
+
+    it 'succeeds with regular exact text' do
+      skip
+    end
+
+    it 'fails with regular mismatch text' do
+      skip
+    end
+
+
+    it 'succeeds with wildcard exact text' do
+      skip
+    end
+
+
+  end
 end

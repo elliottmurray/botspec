@@ -68,7 +68,7 @@ class Dialog
       it interactions[0] do
         resp = @@lex_chat.post_message(interactions[0], 'user_id')
 
-        expect(resp[:message]).to eql(interactions[1])
+        expect(resp[:message]).to match(interactions[1])
       end
     end
 
