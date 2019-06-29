@@ -1,4 +1,4 @@
-require 'aws-sdk'
+require 'aws-sdk-lex'
 
 module BotSpec
   module AWS
