@@ -53,7 +53,7 @@ Should create a changelog record
 ## Docker
 You can run the command with:
 ```
-docker run -e AWS_REGION -e AWS_ACCESS_KEY_ID -e AWS_SECRET_ACCESS_KEY -v `pwd`:/app/bot/specs -it botspec thor cli:verify -f specs/simple_dialog.yaml
+docker run -e AWS_REGION -e AWS_DEFAULT_PROFILE -v $HOME/.aws/credentials:/root/.aws/credentials:ro  -v `pwd`/specs:/app/bot/specs -it elliottmurray/botspec <botname> <relative path to fixture> 
 ```
 
 Assuming you are in your project root directory and your specs are in the corresponding specs folder
