@@ -80,12 +80,23 @@ RSpec.describe 'load yaml file' do
 
   describe :create_example do
 
-    before(:each) do
-
+    after(:each) do
+      @assertions[0].examples.each{ |example| @assertions[0].remove_example example}
     end
 
-    it 'succeeds with regular exact text' do
-      skip
+    it 'creates something (should be an example)' do
+      dialog = Dialog.new({:describe => 'desc', :name => 'nome'})
+      lex_stub = instance_double('BotSpec::AWS::LexService') 
+#      expect(lex_stub).to receive(:post_message).and_return({:name => 'nome'})
+
+      allow(dialog).to receive(:lex_chat).and_return(lex_stub)
+#      allow(dialog).to receive(:validate_interaction).and_return nil
+
+      interactions = ['request something', 'response here']
+      @assertions = dialog.create_example(interactions)
+
+      expect(@assertions.size).to eql 1
+      expect(@assertions[0]).to eql(RSpec::ExampleGroups::DescNome)
     end
 
     it 'fails with regular mismatch text' do

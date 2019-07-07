@@ -65,9 +65,9 @@ class Dialog
     @@lex_chat = lex_chat()
     spec = ::RSpec.describe "#{@describe} #{@name}" do
 
-      it interactions[0] do
-        resp = @@lex_chat.post_message(interactions[0], 'user_id')
+      let(:resp) { @@lex_chat.post_message(interactions[0], 'user_id')}
 
+      it interactions[0] do
         expect(resp[:message]).to match(interactions[1])
       end
     end
