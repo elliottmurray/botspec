@@ -59,16 +59,23 @@ class Dialog
     @examples
   end
 
+  def self.validate_interaction(response, message)
+
+    expect(resp[:message]).to match(interactions[1])
+  end
+
   def create_example(interactions, examples=[])
     return if interactions.size == 0
 
     @@lex_chat = lex_chat()
     spec = ::RSpec.describe "#{@describe} #{@name}" do
 
-      it interactions[0] do
-        resp = @@lex_chat.post_message(interactions[0], 'user_id')
+      let(:resp) { @@lex_chat.post_message(interactions[0], 'user_id')}
 
-        expect(resp[:message]).to match(interactions[1])
+      it interactions[0] do
+        byebug
+        Dialog.validate_interaction(@resp[:message], interactions[1])
+
       end
     end
 
