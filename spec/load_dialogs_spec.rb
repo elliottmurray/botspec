@@ -63,32 +63,14 @@ RSpec.describe 'load yaml file' do
 
     describe :directory_files do
 
-      subject(:dialogs) {LoadDialogs.run_dialogs('botspec_spec', "spec/fixtures/**") }
+      subject(:dialogs) {LoadDialogs.run_dialogs('botspec_spec', 'spec/fixtures/**') }
 
       it 'loads 2 files and breaks down into 5 dialogs' do
-
-        puts "\n\n all dialogs from FILES: " + dialogs.inspect
-
         expect(dialogs.length).to eql(5)
       end
 
       it 'third dialog has 2 interactions' do
-
-        puts "\n\n------------------------- all dialogs ------------------------ "
-
-        puts "\n\n all dialogs from FILES: " + dialogs.inspect
- 
-        dialogs.each do |dialog|
-           puts "\n\n dialog is: " + dialog.inspect
-           dialog.interactions.each do |interaction|
-             puts "\n\n ------- interaction: " + interaction.inspect
-           end
-        end
-
         dialog = dialogs[2]
-
-        puts "\n\n the third dialog:" + dialog.inspect
-
         expect(dialog.interactions.length).to eql(4)
         expect(dialog.name).to eql 'the whats3'
       end
