@@ -12,7 +12,6 @@ class LoadDialogs
     @@botname = botname
 
     dialog_paths = Dir.glob(dialogs_path).select{ |e| File.file? e }
-
     dialog_yamls = dialog_paths.collect{ |dialog_file| Hashie.symbolize_keys YAML.load_file(dialog_file).merge!(file: dialog_file) }
 
     dialog_yamls.collect{ |dialog_content|
@@ -30,16 +29,13 @@ class LoadDialogs
 end
 
 class Dialog
-  attr_reader :describe, :name, :interactions, :file
+  attr_reader :describe, :name, :interactions
+  attr_accessor :file
 
   def initialize args
     args.each do |k,v|
       instance_variable_set("@#{k}", v) unless v.nil?
     end
-  end
-
-  def file(file)
-    @file = file
   end
 
   def interactions

@@ -21,7 +21,6 @@ RSpec.describe 'load yaml file' do
                       ]
                     }
 
-
       allow(YAML).to receive(:load_file).with('spec/fixtures/pizza.yaml').and_return(test_dialog)
       allow(YAML).to receive(:load_file).with('spec/fixtures/test.yaml').and_return(test_dialog2)
       @mock_aws = double('aws mock')
@@ -49,8 +48,9 @@ RSpec.describe 'load yaml file' do
 
       it 'first dialog has 2 interactions' do
         dialog = dialogs[0]
-
+        expect(dialog.file).to eql('spec/fixtures/pizza.yaml')
         expect(dialog.interactions.length).to eql(4)
+        expect(dialog.name).to eql 'the whats1'
       end
 
       it 'second dialog has 1 interactions' do
