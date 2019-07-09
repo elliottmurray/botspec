@@ -21,8 +21,9 @@ RSpec.describe 'load yaml file' do
                       ]
                     }
 
-      allow(YAML).to receive(:load_file).with('spec/fixtures/test.yaml').and_return(test_dialog)
-      allow(YAML).to receive(:load_file).with('spec/fixtures/pizza.yaml').and_return(test_dialog2)
+
+      allow(YAML).to receive(:load_file).with('spec/fixtures/pizza.yaml').and_return(test_dialog)
+      allow(YAML).to receive(:load_file).with('spec/fixtures/test.yaml').and_return(test_dialog2)
       @mock_aws = double('aws mock')
       allow(@mock_aws).to receive(:post_message).and_return({'message': 'response 1'})
       allow_any_instance_of(Dialog).to receive(:create_example_group).and_return(::RSpec.describe('test'))
@@ -40,7 +41,7 @@ RSpec.describe 'load yaml file' do
 
 
     describe :single_file do
-      subject(:dialogs) {LoadDialogs.run_dialogs('botspec_spec', 'spec/fixtures/test.yaml') }
+      subject(:dialogs) {LoadDialogs.run_dialogs('botspec_spec', 'spec/fixtures/pizza.yaml') }
 
       it 'loads a single file and breaks down dialogs' do
         expect(dialogs.length).to eql(2)
@@ -62,14 +63,31 @@ RSpec.describe 'load yaml file' do
 
     describe :directory_files do
 
-      subject(:dialogs) {LoadDialogs.run_dialogs('botspec_spec', 'spec/fixtures/**') }
+      subject(:dialogs) {LoadDialogs.run_dialogs('botspec_spec', "spec/fixtures/**") }
 
       it 'loads 2 files and breaks down into 5 dialogs' do
+
+        puts "\n\n all dialogs from FILES: " + dialogs.inspect
+
         expect(dialogs.length).to eql(5)
       end
 
-      it 'third dialog has 2  interactions' do
+      it 'third dialog has 2 interactions' do
+
+        puts "\n\n------------------------- all dialogs ------------------------ "
+
+        puts "\n\n all dialogs from FILES: " + dialogs.inspect
+ 
+        dialogs.each do |dialog|
+           puts "\n\n dialog is: " + dialog.inspect
+           dialog.interactions.each do |interaction|
+             puts "\n\n ------- interaction: " + interaction.inspect
+           end
+        end
+
         dialog = dialogs[2]
+
+        puts "\n\n the third dialog:" + dialog.inspect
 
         expect(dialog.interactions.length).to eql(4)
         expect(dialog.name).to eql 'the whats3'

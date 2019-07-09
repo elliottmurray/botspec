@@ -11,9 +11,25 @@ class LoadDialogs
   def self.run_dialogs botname, dialogs_path
     @@botname = botname
 
+    puts "\n\n ------------ dialogs path: " + dialogs_path.inspect
+
+    puts "\n\n GLOB array: " + Dir.glob(dialogs_path).inspect
+
     dialog_paths = Dir.glob(dialogs_path).select{ |e| File.file? e }
-    #dialog_paths = Dir["#{dialogs_path}*\[yaml|yml\]"]
+
+    puts "\n\n ------------ dialog paths: " + dialog_paths.inspect
+
     dialog_yamls = dialog_paths.collect{ |dialog_file| Hashie.symbolize_keys YAML.load_file(dialog_file).merge!(file: dialog_file) }
+    
+    #dialog_paths = Dir["#{dialogs_path}*\[yaml|yml\]"]
+    #dialog_yamls = dialog_paths.collect{ |dialog_file| 
+    #      puts "\n\n ---------dialog_file: " + dialog_file.inspect
+    #      result = Hashie.symbolize_keys YAML.load_file(dialog_file).merge!(file: dialog_file) 
+    #      puts "\n -------------- result: " + result.inspect
+    #      result
+    #}
+
+    puts "\n\n dialog yamls: " + dialog_yamls.inspect
 
     dialog_yamls.collect{ |dialog_content|
       dialog_content[:dialogs].collect{ |dialog|
@@ -45,7 +61,6 @@ class Dialog
   def interactions
     @interactions
   end
-
 
   def lex_chat
     @lex_chat ||= BotSpec::AWS::LexService.new({botname: LoadDialogs.botname})
