@@ -21,8 +21,8 @@ RSpec.describe 'load yaml file' do
                       ]
                     }
 
-      allow(YAML).to receive(:load_file).with('spec/fixtures/test.yaml').and_return(test_dialog)
-      allow(YAML).to receive(:load_file).with('spec/fixtures/pizza.yaml').and_return(test_dialog2)
+      allow(YAML).to receive(:load_file).with('spec/fixtures/pizza.yaml').and_return(test_dialog)
+      allow(YAML).to receive(:load_file).with('spec/fixtures/test.yaml').and_return(test_dialog2)
       @mock_aws = double('aws mock')
       allow(@mock_aws).to receive(:post_message).and_return({'message': 'response 1'})
       allow_any_instance_of(Dialog).to receive(:create_example_group).and_return(::RSpec.describe('test'))
@@ -40,7 +40,7 @@ RSpec.describe 'load yaml file' do
 
 
     describe :single_file do
-      subject(:dialogs) {LoadDialogs.run_dialogs('botspec_spec', 'spec/fixtures/test.yaml') }
+      subject(:dialogs) {LoadDialogs.run_dialogs('botspec_spec', 'spec/fixtures/pizza.yaml') }
 
       it 'loads a single file and breaks down dialogs' do
         expect(dialogs.length).to eql(2)
@@ -48,8 +48,9 @@ RSpec.describe 'load yaml file' do
 
       it 'first dialog has 2 interactions' do
         dialog = dialogs[0]
-
+        expect(dialog.file).to eql('spec/fixtures/pizza.yaml')
         expect(dialog.interactions.length).to eql(4)
+        expect(dialog.name).to eql 'the whats1'
       end
 
       it 'second dialog has 1 interactions' do
@@ -68,9 +69,8 @@ RSpec.describe 'load yaml file' do
         expect(dialogs.length).to eql(5)
       end
 
-      it 'third dialog has 2  interactions' do
+      it 'third dialog has 2 interactions' do
         dialog = dialogs[2]
-
         expect(dialog.interactions.length).to eql(4)
         expect(dialog.name).to eql 'the whats3'
       end
