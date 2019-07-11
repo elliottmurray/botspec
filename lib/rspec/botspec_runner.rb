@@ -23,7 +23,6 @@ module BotSpec
 
       def run(args, out, err)
 
-
         setup(err, out)
 
         botname = args[:botname]
