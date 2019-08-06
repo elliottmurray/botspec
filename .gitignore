@@ -36,3 +36,5 @@ tmp/
 # ignore lock file
 Gemfile.lock
 
+vendor/
+
