@@ -24,7 +24,7 @@ jobs:
       # run tests!
       - run:
           name: run tests
-          command: |-
+          command: |
             mkdir /tmp/test-results
             rake spec
 
@@ -32,15 +32,20 @@ jobs:
     docker:
       # specify the version you desire here
       - image: circleci/ruby:2.4.1-node-browsers
+
+    working_directory: ~/repo
+
     steps:
       - checkout
 
-      - gem_release:
-          name: 'Release'
+      - run:
+          name: Gem Release
           command: |
-            scripts/minor.sh
+            bundle install --jobs=4 --retry=3 --path vendor/bundle
+            script/minor.sh
 
-      - docker_release:
+      - run:
+          name: Docker Release
           command: curl --data build=true -X POST https://cloud.docker.com/api/build/v1/source/06910a8b-39e1-4929-b55c-4111c3216452/trigger/24b37a19-bd4c-461d-ba80-3d9f1b0704bd/call/
 
 workflows:
