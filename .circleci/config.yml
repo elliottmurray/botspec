@@ -47,8 +47,9 @@ jobs:
             bundle install --jobs=4 --retry=3 --path vendor/bundle
             git config user.email "elliottmurray@gmail.com"
             git config user.name "Circleci"
+            git config --global push.default simple
             git push --set-upstream origin $CIRCLE_BRANCH
-            script/minor.sh
+            script/patch.sh
 
       - run:
           name: Docker Release
