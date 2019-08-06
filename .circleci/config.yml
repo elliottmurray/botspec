@@ -22,25 +22,23 @@ jobs:
             bundle install --jobs=4 --retry=3 --path vendor/bundle
 
       # run tests!
-      - run:
+      - test:
           name: run tests
           command: |
             mkdir /tmp/test-results
             rake spec
 
   publish:
-    name: Publish artifacts
     steps:
       - checkout
 
-      - gem_release
-        name: Release gem
-        command: |
+      - gem_release:
+          name: 'Release'
+          command: |
           scripts/minor.sh
 
-      - docker_release
-        name: Trigger docker remotely
-        command: curl --data build=true -X POST https://registry.hub.docker.com/u/svendowideit/testhook/trigger/be579c82-7c0e-11e4-81c4-0242ac110020/
+      - docker_release:
+          command: curl --data build=true -X POST https://registry.hub.docker.com/u/svendowideit/testhook/trigger/be579c82-7c0e-11e4-81c4-0242ac110020/
 
 workflows:
   version: 2
