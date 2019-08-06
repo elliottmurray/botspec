@@ -49,6 +49,8 @@ jobs:
             git config user.name "Circleci"
             git config --global push.default simple
             git push --set-upstream origin $CIRCLE_BRANCH
+            .circleci/setup-rubygems.sh
+
             script/patch.sh
 
       - run:
