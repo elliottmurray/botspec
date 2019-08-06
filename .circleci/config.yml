@@ -29,26 +29,29 @@ jobs:
             rake spec
 
   publish:
+    docker:
+      # specify the version you desire here
+      - image: circleci/ruby:2.4.1-node-browsers
     steps:
       - checkout
 
       - gem_release:
           name: 'Release'
           command: |
-          scripts/minor.sh
+            scripts/minor.sh
 
       - docker_release:
-          command: curl --data build=true -X POST https://registry.hub.docker.com/u/svendowideit/testhook/trigger/be579c82-7c0e-11e4-81c4-0242ac110020/
+          command: curl --data build=true -X POST https://cloud.docker.com/api/build/v1/source/06910a8b-39e1-4929-b55c-4111c3216452/trigger/24b37a19-bd4c-461d-ba80-3d9f1b0704bd/call/
 
 workflows:
   version: 2
   build_and_publish:
     jobs:
       - build
-      - publish
-        filters:
-          branches:
-            only:
-              - master
-              - publish_gem
+      - publish:
+          filters:
+            branches:
+              only:
+                - master
+                - publish_gem
 
