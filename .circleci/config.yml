@@ -11,54 +11,63 @@ jobs:
         environment:
           BUNDLER_VERSION: 2.0.2
 
-      # Specify service dependencies here if necessary
-      # CircleCI maintains a library of pre-built images
-      # documented at https://circleci.com/docs/2.0/circleci-images/
-      # - image: circleci/postgres:9.4
-
     working_directory: ~/repo
 
     steps:
       - checkout
-
-      # Download and cache dependencies
-      #      - restore_cache:
-      #          keys:
-      #            - v1-dependencies-{{ checksum "Gemfile.lock" }}
-      #            # fallback to using the latest cache if no exact match is found
-      #            - v1-dependencies-
 
       - run:
           name: install dependencies
           command: |
             bundle install --jobs=4 --retry=3 --path vendor/bundle
 
-            #      - save_cache:
-            #          paths:
-            #            - ./vendor/bundle
-            #          key: v1-dependencies-{{ checksum "Gemfile.lock" }}
-            #
-
       # run tests!
       - run:
           name: run tests
           command: |
             mkdir /tmp/test-results
-            TEST_FILES="$(circleci tests glob "spec/**/*_spec.rb" | \
-              circleci tests split --split-by=timings)"
-
             rake spec
 
-              #            bundle exec rspec \
-              #              --format progress \
-              #              --format RspecJunitFormatter \
-              #              --out /tmp/test-results/rspec.xml \
-              #              --format progress \
-              #              $TEST_FILES
+  publish:
+    docker:
+      # specify the version you desire here
+      - image: circleci/ruby:2.4.1-node-browsers
 
-      # collect reports
-      - store_test_results:
-          path: /tmp/test-results
-      - store_artifacts:
-          path: /tmp/test-results
-          destination: test-results
+    working_directory: ~/repo
+
+    steps:
+      - add_ssh_keys:
+          fingerprints:
+            - "4c:60:84:77:2a:a6:e5:1a:4c:7f:c3:fc:dd:4c:78:c4"
+      - checkout
+
+      - run:
+          name: Gem Release
+          command: |
+            bundle install --jobs=4 --retry=3 --path vendor/bundle
+            git config user.email "elliottmurray@gmail.com"
+            git config user.name "Circleci"
+            git config --global push.default simple
+            git push --set-upstream origin $CIRCLE_BRANCH
+            .circleci/setup-rubygems.sh
+
+            script/patch.sh
+
+      - run:
+          name: Docker Release
+          command: curl --data build=true -X POST https://cloud.docker.com/api/build/v1/source/06910a8b-39e1-4929-b55c-4111c3216452/trigger/24b37a19-bd4c-461d-ba80-3d9f1b0704bd/call/
+
+workflows:
+  version: 2
+  build_and_publish:
+    jobs:
+      - build
+      - publish:
+          requires:
+            - build
+          filters:
+            branches:
+              only:
+                - master
+                - publish_gem
+
