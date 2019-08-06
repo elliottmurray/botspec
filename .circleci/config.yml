@@ -11,54 +11,46 @@ jobs:
         environment:
           BUNDLER_VERSION: 2.0.2
 
-      # Specify service dependencies here if necessary
-      # CircleCI maintains a library of pre-built images
-      # documented at https://circleci.com/docs/2.0/circleci-images/
-      # - image: circleci/postgres:9.4
-
     working_directory: ~/repo
 
     steps:
       - checkout
-
-      # Download and cache dependencies
-      #      - restore_cache:
-      #          keys:
-      #            - v1-dependencies-{{ checksum "Gemfile.lock" }}
-      #            # fallback to using the latest cache if no exact match is found
-      #            - v1-dependencies-
 
       - run:
           name: install dependencies
           command: |
             bundle install --jobs=4 --retry=3 --path vendor/bundle
 
-            #      - save_cache:
-            #          paths:
-            #            - ./vendor/bundle
-            #          key: v1-dependencies-{{ checksum "Gemfile.lock" }}
-            #
-
       # run tests!
       - run:
           name: run tests
           command: |
             mkdir /tmp/test-results
-            TEST_FILES="$(circleci tests glob "spec/**/*_spec.rb" | \
-              circleci tests split --split-by=timings)"
-
             rake spec
 
-              #            bundle exec rspec \
-              #              --format progress \
-              #              --format RspecJunitFormatter \
-              #              --out /tmp/test-results/rspec.xml \
-              #              --format progress \
-              #              $TEST_FILES
+  publish:
+    name: Publish artifacts
+    steps:
+      - checkout
 
-      # collect reports
-      - store_test_results:
-          path: /tmp/test-results
-      - store_artifacts:
-          path: /tmp/test-results
-          destination: test-results
+      - gem_release
+        name: Release gem
+        command: |
+          scripts/minor.sh
+
+      - docker_release
+        name: Trigger docker remotely
+        command: curl --data build=true -X POST https://registry.hub.docker.com/u/svendowideit/testhook/trigger/be579c82-7c0e-11e4-81c4-0242ac110020/
+
+workflows:
+  version: 2
+  build_and_publish:
+    jobs:
+      - build
+      - publish
+        filters:
+          branches:
+            only:
+              - master
+              - publish_gem
+
