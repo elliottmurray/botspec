@@ -12,15 +12,18 @@ class LoadDialogs
     @@botname = botname
 
     dialog_paths = Dir.glob(dialogs_path).select{ |e| File.file? e }
-    dialog_yamls = dialog_paths.collect{ |dialog_file| Hashie.symbolize_keys YAML.load_file(dialog_file).merge!(file: dialog_file) }
+#    dialog_yamls = dialog_paths.collect{ |dialog_file| Hashie.symbolize_keys YAML.load_file(dialog_file).merge!(file: dialog_file) }
+#
+#    dialog_yamls.collect{ |dialog_content|
+#      dialog_content[:dialogs].collect{ |dialog|
+#        Dialog.new({describe: dialog_content[:description], name: dialog[:what], interactions:  dialog[:dialog], file: dialog_content[:file]})
+#      }.each{ |dialog|
+#        dialog.create_example_group
+#      }
+#    }.flatten
 
-    dialog_yamls.collect{ |dialog_content|
-      dialog_content[:dialogs].collect{ |dialog|
-        Dialog.new({describe: dialog_content[:description], name: dialog[:what], interactions:  dialog[:dialog], file: dialog_content[:file]})
-      }.each{ |dialog|
-        dialog.create_example_group
-      }
-    }.flatten
+
+
   end
 
   def self.botname

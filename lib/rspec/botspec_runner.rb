@@ -1,7 +1,11 @@
 require 'rspec'
 require 'load_dialogs.rb'
+ module BotSpec
 
-module BotSpec
+    class Description < RSpec::Core::ExampleGroup
+
+    end
+
     class BotSpecRunner < RSpec::Core::Runner
 
       def configure_rspec
@@ -20,20 +24,21 @@ module BotSpec
         end
       end
 
-
-      def run(args, out, err)
-
-
-        setup(err, out)
-
-        botname = args[:botname]
-        return @configuration.reporter.exit_early(@configuration.failure_exit_code) if RSpec.world.wants_to_quit
-        dialogs_path = args[:dialogs_path]
-
-        run_specs(LoadDialogs.run_dialogs(botname, dialogs_path).map{|dialog| dialog.examples}.flatten).tap do
-          persist_example_statuses
-        end
-      end
+#
+#      def run(args, out, err)
+#        puts "!!!!!!!!!!!!!!!"
+#        #alias :Description :Describe
+#        setup(err, out)
+#
+#
+#        botname = args[:botname]
+#        return @configuration.reporter.exit_early(@configuration.failure_exit_code) if RSpec.world.wants_to_quit
+#        dialogs_path = args[:dialogs_path]
+#
+#        run_specs(LoadDialogs.run_dialogs(botname, dialogs_path).map{|dialog| dialog.examples}.flatten).tap do
+#          persist_example_statuses
+#        end
+#      end
     end
 end
 
