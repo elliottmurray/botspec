@@ -69,5 +69,4 @@ workflows:
             branches:
               only:
                 - master
-                - publish_gem
 
