@@ -1,5 +1,7 @@
 # Botspec
 
+[![CircleCI](https://circleci.com/gh/elliottmurray/botspec.svg?style=svg)](https://circleci.com/gh/elliottmurray/botspec)
+
 Making specs for your bot that can be run in your build pipeline.
 
 ## Installation
@@ -32,10 +34,10 @@ After checking out the repo, run `bin/setup` to install dependencies. Then, run 
 To install this gem onto your local machine, run `bundle exec rake install`. To release a new version, update the version number in `version.rb`, and then run `bundle exec rake release`, which will create a git tag for the version, push git commits and tags, and push the `.gem` file to [rubygems.org](https://rubygems.org).
 
 ## Running a command
-To install run 
+To install run
 ```thor install lib/cli.thor --as botspec --force
 ```
-Then you can run 
+Then you can run
 
 ```
 thor cli:verify -f specs/simple_dialog.yaml
@@ -53,7 +55,7 @@ Should create a changelog record
 ## Docker
 You can run the command with:
 ```
-docker run -e AWS_REGION -e AWS_DEFAULT_PROFILE -v $HOME/.aws/credentials:/root/.aws/credentials:ro  -v `pwd`/specs:/app/bot/specs -it elliottmurray/botspec <botname> <relative path to fixture> 
+docker run -e AWS_REGION -e AWS_DEFAULT_PROFILE -v $HOME/.aws/credentials:/root/.aws/credentials:ro  -v `pwd`/specs:/app/bot/specs -it elliottmurray/botspec <botname> <relative path to fixture>
 ```
 
 Assuming you are in your project root directory and your specs are in the corresponding specs folder
