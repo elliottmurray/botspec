@@ -28,48 +28,56 @@ class LoadDialogs
   end
 end
 
+module BotSpec
+ module AWS
+   class LexService
+     def initialize(arg1)
+     end
+     def post_message(arg1, arg2)
+       p '********'
+       p 'NOT MOCKED!!!!'
+       p '********'
+       { arg: 1 }
+     end
+   end
+ end
+end
+
 class Dialog
-  attr_reader :describe, :name, :interactions
-  attr_accessor :file
-
-  def initialize args
-    args.each do |k,v|
-      instance_variable_set("@#{k}", v) unless v.nil?
-    end
-  end
-
-  def interactions
-    @interactions
-  end
-
-  def lex_chat
-    @lex_chat ||= BotSpec::AWS::LexService.new({botname: LoadDialogs.botname})
-  end
-
-  def create_example_group()
-    @examples = create_example(@interactions).flatten
-  end
-
-  def examples
-    @examples
-  end
-
-  def create_example(interactions, examples=[])
-    return if interactions.size == 0
-
-    @@lex_chat = lex_chat()
-    spec = ::RSpec.describe "#{@describe} #{@name}" do
-
-      let(:resp) { @@lex_chat.post_message(interactions[0], 'user_id')}
-
-      it interactions[0] do
-        expect(resp[:message]).to match(interactions[1])
-      end
-    end
-
-    examples << spec
-    create_example(interactions.drop(2), examples)
-
-    examples
-  end
+ attr_reader :describe, :name, :interactions
+ attr_accessor :file
+ def initialize args
+   args.each do |k,v|
+     instance_variable_set("@#{k}", v) unless v.nil?
+   end
+ end
+ def interactions
+   @interactions
+ end
+ def lex_chat
+   @lex_chat ||= BotSpec::AWS::LexService.new(botname: 'Hello')
+ end
+ def create_example_group()
+   @examples = create_example(@interactions).flatten
+ end
+ def examples
+   @examples
+ end
+ def create_example(interactions, examples = [])
+   return if interactions.size == 0
+   dialog = self
+   spec = ::RSpec.describe "#{@describe} #{@name}" do
+           # allowing the caller to mock
+           before do
+             yield if block_given?
+           end
+           let(:resp) { dialog.lex_chat.post_message(interactions[0], 'user_id') }
+           it interactions[0] do
+             expect(resp[:message]).to match(interactions[1])
+           end
+         end
+   examples << spec
+   create_example(interactions.drop(2), examples)
+   examples
+ end
 end

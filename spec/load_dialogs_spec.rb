@@ -78,36 +78,48 @@ RSpec.describe 'load yaml file' do
       
   end
 
-  describe :create_example do
+ describe :create_example do
+   
+   after(:each) do
+     @assertions[0].examples.each{ |example| @assertions[0].remove_example example}
+   end
+   
+   it 'creates something (should be an example)' do
+     dialog = Dialog.new(describe: 'desc', name: 'nome')
+     interactions = ['request something creates', 'response here']
+     @assertions = dialog.create_example(interactions) do
+       chat = double
+       allow(dialog).to receive(:lex_chat).and_return(chat)
+       allow(chat).to receive(:post_message).and_return(name: 'name', message: 'response here')
+     end
+     expect(@assertions.size).to eql 1
+     expect(@assertions[0]).to eql(RSpec::ExampleGroups::DescNome)
+     expect(@assertions[0].run).to be_truthy
+   end
 
-    after(:each) do
-      @assertions[0].examples.each{ |example| @assertions[0].remove_example example}
-    end
+   it 'fails with regular mismatch text' do
+     dialog = Dialog.new(describe: 'desc', name: 'mismatch')
+     interactions = ['request something mismatched response', 'right response here']
+     @assertions = dialog.create_example(interactions) do
+       chat = double
+       allow(dialog).to receive(:lex_chat).and_return(chat)
+       allow(chat).to receive(:post_message).and_return(name: 'name', message: 'wrong response here')
+     end
+     expect(@assertions.size).to eql 1
+     expect(@assertions[0]).to eql(RSpec::ExampleGroups::DescMismatch)
+     expect(@assertions[0].run()).to be_falsey
+   end
 
-    it 'creates something (should be an example)' do
-      dialog = Dialog.new({:describe => 'desc', :name => 'nome'})
-      lex_stub = instance_double('BotSpec::AWS::LexService') 
-#      expect(lex_stub).to receive(:post_message).and_return({:name => 'nome'})
+   it 'succeeds with wildcard exact text' do
+     dialog = Dialog.new(describe: 'desc', name: 'nome')
+     interactions = ['request something wildcard regex match', 'response.*']
+     @assertions = dialog.create_example(interactions) do
+       chat = double
+       allow(dialog).to receive(:lex_chat).and_return(chat)
+       allow(chat).to receive(:post_message).and_return(name: 'name', message: 'response here')
+     end
+     expect(@assertions[0].run).to be_truthy
+   end
+ end
 
-      allow(dialog).to receive(:lex_chat).and_return(lex_stub)
-#      allow(dialog).to receive(:validate_interaction).and_return nil
-
-      interactions = ['request something', 'response here']
-      @assertions = dialog.create_example(interactions)
-
-      expect(@assertions.size).to eql 1
-      expect(@assertions[0]).to eql(RSpec::ExampleGroups::DescNome)
-    end
-
-    it 'fails with regular mismatch text' do
-      skip
-    end
-
-
-    it 'succeeds with wildcard exact text' do
-      skip
-    end
-
-
-  end
 end
