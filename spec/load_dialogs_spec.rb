@@ -1,6 +1,20 @@
 require 'spec_helper.rb'
 require 'load_dialogs.rb'
 
+RSpec::Matchers.define :custom_matcher_failed_example do |expected|
+  match do |actual|
+    if actual.exception.instance_of?(RSpec::Expectations::ExpectationNotMetError)
+      puts "\n>> GOT an expetationNotMetError!: " + actual.inspect
+      puts "\n>> a RSpec::Expectations::ExpectationNotMetError error!: " + actual.exception.message.inspect
+      puts "\n>> in IF return!!! #{actual.exception.message} == #{expected}"
+      puts "\n>> in IF return!!! = #{actual.exception.message == expected}"
+      return actual.exception.message == expected
+    end
+    return false
+  end
+end
+
+
 RSpec.describe 'load yaml file' do
   let(:dialog_hash) { {'what': 'name', 'dialog': ['test utterance', 'second utterance'] } }
 
@@ -88,9 +102,9 @@ RSpec.describe 'load yaml file' do
      dialog = Dialog.new(describe: 'desc', name: 'nome')
      interactions = ['request something creates', 'response here']
      @assertions = dialog.create_example(interactions) do
-       chat = double
-       allow(dialog).to receive(:lex_chat).and_return(chat)
-       allow(chat).to receive(:post_message).and_return(name: 'name', message: 'response here')
+       chatbot = instance_double(BotSpec::AWS::LexService)
+       allow(dialog).to receive(:lex_chat).and_return(chatbot)
+       allow(chatbot).to receive(:post_message).and_return(name: 'name', message: 'response here')
      end
      expect(@assertions.size).to eql 1
      expect(@assertions[0]).to eql(RSpec::ExampleGroups::DescNome)
@@ -98,26 +112,40 @@ RSpec.describe 'load yaml file' do
    end
 
    it 'fails with regular mismatch text' do
+
      dialog = Dialog.new(describe: 'desc', name: 'mismatch')
      interactions = ['request something mismatched response', 'right response here']
      @assertions = dialog.create_example(interactions) do
-       chat = double
-       allow(dialog).to receive(:lex_chat).and_return(chat)
-       allow(chat).to receive(:post_message).and_return(name: 'name', message: 'wrong response here')
+       chatbot = spy(BotSpec::AWS::LexService)
+       allow(dialog).to receive(:lex_chat).and_return(chatbot)
+       allow(chatbot).to receive(:post_message).and_return(name: 'name', message: 'wrong response here')
      end
+
+     reporter = instance_double(RSpec::Core::Reporter)
+     allow(reporter).to receive(:example_group_started)
+     allow(reporter).to receive(:example_started)
+     allow(reporter).to receive(:example_finished)
+     allow(reporter).to receive(:example_group_finished)
+     allow(reporter).to receive(:fail_fast_limit_met?).and_return(false)
+     expect(reporter).to receive(:example_failed).with(custom_matcher_failed_example('expected "wrong response here" to match "right response here"'))
+
      expect(@assertions.size).to eql 1
      expect(@assertions[0]).to eql(RSpec::ExampleGroups::DescMismatch)
-     expect(@assertions[0].run()).to be_falsey
+     expect(@assertions[0].run(reporter)).to be_falsey
+
    end
 
    it 'succeeds with wildcard exact text' do
-     dialog = Dialog.new(describe: 'desc', name: 'nome')
+     dialog = Dialog.new(describe: 'desc', name: 'wildcard')
      interactions = ['request something wildcard regex match', 'response.*']
      @assertions = dialog.create_example(interactions) do
-       chat = double
-       allow(dialog).to receive(:lex_chat).and_return(chat)
-       allow(chat).to receive(:post_message).and_return(name: 'name', message: 'response here')
+       chatbot = instance_double(BotSpec::AWS::LexService)
+       allow(dialog).to receive(:lex_chat).and_return(chatbot)
+       allow(chatbot).to receive(:post_message).and_return(name: 'name', message: 'response here')
      end
+
+     expect(@assertions.size).to eql 1
+     expect(@assertions[0]).to eql(RSpec::ExampleGroups::DescWildcard)
      expect(@assertions[0].run).to be_truthy
    end
  end

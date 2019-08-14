@@ -28,21 +28,6 @@ class LoadDialogs
   end
 end
 
-module BotSpec
- module AWS
-   class LexService
-     def initialize(arg1)
-     end
-     def post_message(arg1, arg2)
-       p '********'
-       p 'NOT MOCKED!!!!'
-       p '********'
-       { arg: 1 }
-     end
-   end
- end
-end
-
 class Dialog
  attr_reader :describe, :name, :interactions
  attr_accessor :file
