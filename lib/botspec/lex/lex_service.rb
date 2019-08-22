@@ -8,13 +8,8 @@ module BotSpec
       end
 
       def initialize(config)
-
-        puts "\n\n LEX SERVICE stub with this DATA: " + config[:stub_responses].inspect
-
         if config[:stub_responses]
           @lex_client = Aws::Lex::Client.new(stub_responses: true)
-          post_text_stub_data = config[:stub_responses]
-          puts "\n\n stub with this DATA: " + config[:stub_responses].inspect
           @lex_client.stub_responses(config[:stub_responses][:operation_to_stub], config[:stub_responses][:stub_data])
         end
         @config = config

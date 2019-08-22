@@ -83,35 +83,15 @@ RSpec.describe 'load yaml file' do
   describe :create_example do
 
     it 'creates something (should be an example)' do
-      dialog = Dialog.new({:describe => 'desc', :name => 'nomehhhh'})
-      stubbed_post_text_response = Aws::Lex::Client.new(stub_responses: true).stub_data(:post_text)
-      stubbed_post_text_response.message = "response here"
+      dialog = Dialog.new({:describe => 'desc', :name => 'nome'})
+      lex_stub = instance_double('BotSpec::AWS::LexService')
 
-      lex_service_with_stubbed_aws_client = BotSpec::AWS::LexService.new({
-                                                                           stub_responses: {
-                                                                            operation_to_stub: :post_text, 
-                                                                            stub_data: stubbed_post_text_response
-                                                                          },
-                                                                          botname: 'TESTCHATBOT'})
+      allow(dialog).to receive(:lex_chat).and_return(lex_stub)
 
-      allow(dialog).to receive(:lex_chat).and_return(lex_service_with_stubbed_aws_client)
-
-      interactions = ['request something', 'response here']
-      @assertions = dialog.create_example(interactions)
-
-      expect(@assertions.size).to eql 1
-      expect(@assertions[0]).to eql(RSpec::ExampleGroups::DescNomehhhh)
-      @assertions[0].run()
-
-      puts "\n\n examples: " + @assertions[0].examples.inspect
-      expect(@assertions[0].examples.first.execution_result.status).to eq(:passed)
-      api_requests = lex_service_with_stubbed_aws_client.lex_client.api_requests
-
-      puts "\n\n results operation_name: " + api_requests[0][:operation_name].inspect
-      puts "\n\n results params: " + api_requests[0][:params].inspect
-
-      expect(api_requests[0][:operation_name]).to eq(:post_text)
-      expect(api_requests[0][:params][:input_text]).to eq("request something")
+      interactions = ['request something', 'response SOMEWEIRD STUFF THAT WILL STILL MATCH THE REGEXBBBBBBBBB here']
+      assertions = dialog.create_example(interactions)
+      expect(assertions.size).to eql 1
+      expect(assertions[0]).to eql(RSpec::ExampleGroups::DescNome)
     end
 
     it 'fails with regular mismatch text' do
@@ -130,30 +110,21 @@ RSpec.describe 'load yaml file' do
 
       interactions = ['initiating comment from user', 'non matching text here']
 
-      @assertions = []
+      assertions = []
 
       RSpec::Core::Sandbox.sandboxed do |config|
-        @assertions = dialog.create_example(interactions)
-        expect(@assertions.size).to eql 1
-        result_of_run = @assertions[0].run()
+        assertions = dialog.create_example(interactions)
+        expect(assertions.size).to eql 1
+        result_of_run = assertions[0].run()
         puts "\n\n result of RUN: " + result_of_run.inspect
       end
 
-      puts "\n\n @assertions[0].examples is: " + @assertions[0].examples.inspect
-      puts "\n\n @assertions[0].examples.first.execution_result is: " + @assertions[0].examples.first.execution_result.inspect
-      puts "\n\n @assertions[0].examples.first.execution_result.status is: " + @assertions[0].examples.first.execution_result.status.inspect
-      puts "\n\n @assertions[0].examples.first.execution_result.exception.message is: " + @assertions[0].examples.first.execution_result.exception.message.inspect
-
-      expect(@assertions[0].examples.first.execution_result.status).to eq(:failed)
-      expect(@assertions[0].examples.first.execution_result.exception).to be_a(RSpec::Expectations::ExpectationNotMetError)
-      expect(@assertions[0].examples.first.execution_result.exception.message).to eq('expected "mock response here" to match "non matching text here"')
+      expect(assertions[0].examples.first.execution_result.status).to eq(:failed)
+      expect(assertions[0].examples.first.execution_result.exception).to be_a(RSpec::Expectations::ExpectationNotMetError)
+      expect(assertions[0].examples.first.execution_result.exception.message).to eq('expected "mock response here" to match "non matching text here"')
 
       api_requests = lex_service_with_stubbed_aws_client.lex_client.api_requests
-      api_requests.each do |api_request|
-        puts "\n\n request operation: " + api_request[:operation_name].inspect
-        puts "\n\n params: " + api_request[:params].inspect
-      end
-
+      expect(api_requests.size).to eq(1)
       expect(api_requests[0][:operation_name]).to eq(:post_text)
       expect(api_requests[0][:params][:input_text]).to eq("initiating comment from user")
     end
@@ -161,7 +132,7 @@ RSpec.describe 'load yaml file' do
     it 'succeeds with wildcard exact text' do
       dialog = Dialog.new({:describe => 'desc', :name => 'wildcard'})
       stubbed_post_text_response = Aws::Lex::Client.new(stub_responses: true).stub_data(:post_text)
-      stubbed_post_text_response.message = "response SOMEWEIRD STUFF THAT WILL STILL MATCH THE REGEX here"
+      stubbed_post_text_response.message = "response SOMEWEIRD STUFF THAT WILL STILL MATCH THE REGEXBBBBBBBBB here"
 
       lex_service_with_stubbed_aws_client = BotSpec::AWS::LexService.new({
                                                                            stub_responses: {
@@ -173,19 +144,16 @@ RSpec.describe 'load yaml file' do
       allow(dialog).to receive(:lex_chat).and_return(lex_service_with_stubbed_aws_client)
 
       interactions = ['request wildcard something', 'response .* here']
-      @assertions = dialog.create_example(interactions)
+      assertions = dialog.create_example(interactions)
 
-      expect(@assertions.size).to eql 1
-      expect(@assertions[0]).to eql(RSpec::ExampleGroups::DescWildcard)
-      @assertions[0].run()
+      expect(assertions.size).to eql 1
+      expect(assertions[0]).to eql(RSpec::ExampleGroups::DescWildcard)
+      assertions[0].run()
 
-      expect(@assertions[0].examples.first.execution_result.status).to eq(:passed)
+      expect(assertions[0].examples.first.execution_result.status).to eq(:passed)
       api_requests = lex_service_with_stubbed_aws_client.lex_client.api_requests
 
-      api_requests.each do |api_request|
-        puts "\n\n request operation: " + api_request[:operation_name].inspect
-        puts "\n\n params: " + api_request[:params].inspect
-      end
+      expect(api_requests.size).to eq(1)
       expect(api_requests[0][:operation_name]).to eq(:post_text)
       expect(api_requests[0][:params][:input_text]).to eq("request wildcard something")
 
