@@ -1,5 +1,7 @@
+require 'rspec/core/sandbox'
 require 'spec_helper.rb'
 require 'load_dialogs.rb'
+
 
 RSpec.describe 'load yaml file' do
   let(:dialog_hash) { {'what': 'name', 'dialog': ['test utterance', 'second utterance'] } }
@@ -80,15 +82,10 @@ RSpec.describe 'load yaml file' do
 
   describe :create_example do
 
-    after(:each) do
-      #@assertions[0].examples.each{ |example| @assertions[0].remove_example example}
-    end
-
     it 'creates something (should be an example)' do
-      dialog = Dialog.new({:describe => 'desc', :name => 'nome'})
+      dialog = Dialog.new({:describe => 'desc', :name => 'nomehhhh'})
       stubbed_post_text_response = Aws::Lex::Client.new(stub_responses: true).stub_data(:post_text)
       stubbed_post_text_response.message = "response here"
-      puts "\n\n afta stubbed post text resp: " + stubbed_post_text_response.inspect
 
       lex_service_with_stubbed_aws_client = BotSpec::AWS::LexService.new({
                                                                            stub_responses: {
@@ -103,26 +100,24 @@ RSpec.describe 'load yaml file' do
       @assertions = dialog.create_example(interactions)
 
       expect(@assertions.size).to eql 1
-      expect(@assertions[0]).to eql(RSpec::ExampleGroups::DescNome)
+      expect(@assertions[0]).to eql(RSpec::ExampleGroups::DescNomehhhh)
       @assertions[0].run()
 
+      puts "\n\n examples: " + @assertions[0].examples.inspect
       expect(@assertions[0].examples.first.execution_result.status).to eq(:passed)
       api_requests = lex_service_with_stubbed_aws_client.lex_client.api_requests
 
-      api_requests.each do |api_request|
-        puts "\n\n request operation: " + api_request[:operation_name].inspect
-        puts "\n\n params: " + api_request[:params].inspect
-      end
+      puts "\n\n results operation_name: " + api_requests[0][:operation_name].inspect
+      puts "\n\n results params: " + api_requests[0][:params].inspect
+
       expect(api_requests[0][:operation_name]).to eq(:post_text)
       expect(api_requests[0][:params][:input_text]).to eq("request something")
-
     end
 
     it 'fails with regular mismatch text' do
       dialog = Dialog.new({:describe => 'desc', :name => 'mismatch'})
       stubbed_post_text_response = Aws::Lex::Client.new(stub_responses: true).stub_data(:post_text)
       stubbed_post_text_response.message = "mock response here"
-      puts "\n\n afta stubbed post text resp: " + stubbed_post_text_response.inspect
 
       lex_service_with_stubbed_aws_client = BotSpec::AWS::LexService.new({
                                                                            stub_responses: {
@@ -134,63 +129,26 @@ RSpec.describe 'load yaml file' do
       allow(dialog).to receive(:lex_chat).and_return(lex_service_with_stubbed_aws_client)
 
       interactions = ['initiating comment from user', 'non matching text here']
-      @assertions = dialog.create_example(interactions)
 
-      expect(@assertions.size).to eql 1
-      #expect(@assertions[0]).to eql(RSpec::ExampleGroups::DescMismatch)
+      @assertions = []
 
-      reporter = double(RSpec::Core::Reporter)
+      RSpec::Core::Sandbox.sandboxed do |config|
+        @assertions = dialog.create_example(interactions)
+        expect(@assertions.size).to eql 1
+        result_of_run = @assertions[0].run()
+        puts "\n\n result of RUN: " + result_of_run.inspect
+      end
 
-      allow(reporter).to receive(:stop) { |arg| 
-        puts "\n\n argument to STOP: " + arg.inspect
-      }
-
-      allow(reporter).to receive(:start_dump) { |arg| 
-        puts "\n\n argument to START DUMP!: " + arg.inspect
-      }
-
-      allow(reporter).to receive(:example_group_started) { |arg| 
-        puts "\n\n argument to example group started: " + arg.inspect
-      }
-
-      allow(reporter).to receive(:example_started) { |arg| 
-        puts "\n\n argument to example started: " + arg.inspect
-      }
-
-      allow(reporter).to receive(:example_group_finished) { |arg|
-        puts "\n\n argument to example group finished: " + arg.inspect
-        #byebug
-      }
-
-      allow(reporter).to receive(:example_finished) { |arg| 
-        arg.execution_result.record_finished(:passed, Time.now)
-        arg.execution_result.exception = nil
-        #byebug
-        puts "\n\n argument to example finished: " + arg.inspect
-      }
-
-      allow(reporter).to receive(:example_failed) { |arg| 
-        arg.execution_result.record_finished(:passed, Time.now)
-        arg.execution_result.exception = nil
-        puts "\n\n argument to example failed: " + arg.inspect
-      }
-
-      allow(reporter).to receive(:failed_examples).and_return([])
-
-      allow(reporter).to receive(:fail_fast_limit_met?).and_return(false)
-
-      my_runner = RSpec::Core::Runner.new({})
- 
-      array_of_example_groups = [@assertions[0].examples.first.example_group]
-
-      res = my_runner.run_specs(array_of_example_groups)
-
-      puts "\n\n result from my runner: " + res.inspect
-      puts "\n\n @assertions[0].examples.first.execution_result.status: " + @assertions[0].examples.first.execution_result.status.inspect
+      puts "\n\n @assertions[0].examples is: " + @assertions[0].examples.inspect
+      puts "\n\n @assertions[0].examples.first.execution_result is: " + @assertions[0].examples.first.execution_result.inspect
+      puts "\n\n @assertions[0].examples.first.execution_result.status is: " + @assertions[0].examples.first.execution_result.status.inspect
+      puts "\n\n @assertions[0].examples.first.execution_result.exception.message is: " + @assertions[0].examples.first.execution_result.exception.message.inspect
 
       expect(@assertions[0].examples.first.execution_result.status).to eq(:failed)
-      api_requests = lex_service_with_stubbed_aws_client.lex_client.api_requests
+      expect(@assertions[0].examples.first.execution_result.exception).to be_a(RSpec::Expectations::ExpectationNotMetError)
+      expect(@assertions[0].examples.first.execution_result.exception.message).to eq('expected "mock response here" to match "non matching text here"')
 
+      api_requests = lex_service_with_stubbed_aws_client.lex_client.api_requests
       api_requests.each do |api_request|
         puts "\n\n request operation: " + api_request[:operation_name].inspect
         puts "\n\n params: " + api_request[:params].inspect
@@ -204,7 +162,6 @@ RSpec.describe 'load yaml file' do
       dialog = Dialog.new({:describe => 'desc', :name => 'wildcard'})
       stubbed_post_text_response = Aws::Lex::Client.new(stub_responses: true).stub_data(:post_text)
       stubbed_post_text_response.message = "response SOMEWEIRD STUFF THAT WILL STILL MATCH THE REGEX here"
-      puts "\n\n afta stubbed post text resp: " + stubbed_post_text_response.inspect
 
       lex_service_with_stubbed_aws_client = BotSpec::AWS::LexService.new({
                                                                            stub_responses: {
@@ -215,7 +172,7 @@ RSpec.describe 'load yaml file' do
 
       allow(dialog).to receive(:lex_chat).and_return(lex_service_with_stubbed_aws_client)
 
-      interactions = ['request something', 'response .* here']
+      interactions = ['request wildcard something', 'response .* here']
       @assertions = dialog.create_example(interactions)
 
       expect(@assertions.size).to eql 1
@@ -230,7 +187,7 @@ RSpec.describe 'load yaml file' do
         puts "\n\n params: " + api_request[:params].inspect
       end
       expect(api_requests[0][:operation_name]).to eq(:post_text)
-      expect(api_requests[0][:params][:input_text]).to eq("request something")
+      expect(api_requests[0][:params][:input_text]).to eq("request wildcard something")
 
     end
 

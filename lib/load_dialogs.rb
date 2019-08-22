@@ -4,7 +4,6 @@ require 'botspec/lex/lex_service.rb'
 require 'rspec'
 
 require "bundler/setup"
-require 'byebug'
 
 class LoadDialogs
 
@@ -63,8 +62,7 @@ class Dialog
       let(:resp) { @@lex_chat.post_message(interactions[0], 'user_id')}
 
       it interactions[0] do
-        puts "\n WE GOT: and this: |#{resp[:message]}| should equal this: |#{interactions[1]}|"
-        puts "\n WE GOT: match?: #{resp[:message].match(interactions[1])}"
+        puts "\n\n this |#{resp[:message]}| should match: |#{interactions[1]}|"
         expect(resp[:message]).to match(interactions[1])
       end
     end

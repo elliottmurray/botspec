@@ -8,13 +8,14 @@ module BotSpec
       end
 
       def initialize(config)
-        puts "\n\n make new LEX Service with config: " + config.inspect
+
+        puts "\n\n LEX SERVICE stub with this DATA: " + config[:stub_responses].inspect
+
         if config[:stub_responses]
           @lex_client = Aws::Lex::Client.new(stub_responses: true)
           post_text_stub_data = config[:stub_responses]
-          puts "\n\n call stub_responses with: " + config[:stub_responses].inspect
+          puts "\n\n stub with this DATA: " + config[:stub_responses].inspect
           @lex_client.stub_responses(config[:stub_responses][:operation_to_stub], config[:stub_responses][:stub_data])
-
         end
         @config = config
         @bot_name = config[:botname]
@@ -22,7 +23,6 @@ module BotSpec
       end
 
       def lex_client
-        puts "\n\n calling lex client: " + @lex_client.inspect
         @lex_client ||= Aws::Lex::Client.new
       end
 
