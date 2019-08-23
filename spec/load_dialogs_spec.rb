@@ -82,13 +82,17 @@ RSpec.describe 'load yaml file' do
 
   describe :create_example do
 
+    before(:each) do 
+      RSpec.clear_examples
+    end
+
     it 'creates something (should be an example)' do
       dialog = Dialog.new({:describe => 'desc', :name => 'nome'})
       lex_stub = instance_double('BotSpec::AWS::LexService')
 
       allow(dialog).to receive(:lex_chat).and_return(lex_stub)
 
-      interactions = ['request something', 'response SOMEWEIRD STUFF THAT WILL STILL MATCH THE REGEXBBBBBBBBB here']
+      interactions = ['request something', 'response here']
       assertions = dialog.create_example(interactions)
       expect(assertions.size).to eql 1
       expect(assertions[0]).to eql(RSpec::ExampleGroups::DescNome)
@@ -115,8 +119,7 @@ RSpec.describe 'load yaml file' do
       RSpec::Core::Sandbox.sandboxed do |config|
         assertions = dialog.create_example(interactions)
         expect(assertions.size).to eql 1
-        result_of_run = assertions[0].run()
-        puts "\n\n result of RUN: " + result_of_run.inspect
+        assertions[0].run()
       end
 
       expect(assertions[0].examples.first.execution_result.status).to eq(:failed)
@@ -132,7 +135,7 @@ RSpec.describe 'load yaml file' do
     it 'succeeds with wildcard exact text' do
       dialog = Dialog.new({:describe => 'desc', :name => 'wildcard'})
       stubbed_post_text_response = Aws::Lex::Client.new(stub_responses: true).stub_data(:post_text)
-      stubbed_post_text_response.message = "response SOMEWEIRD STUFF THAT WILL STILL MATCH THE REGEXBBBBBBBBB here"
+      stubbed_post_text_response.message = "response THIS WILL STILL MATCH THE REGEX here"
 
       lex_service_with_stubbed_aws_client = BotSpec::AWS::LexService.new({
                                                                            stub_responses: {
