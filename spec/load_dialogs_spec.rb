@@ -65,19 +65,25 @@ RSpec.describe 'load yaml file' do
 
     describe :directory_files do
 
-      subject(:dialogs) {LoadDialogs.run_dialogs('botspec_spec', 'spec/fixtures/**') }
+      #subject(:dialogs) {LoadDialogs.run_dialogs('botspec_spec', 'spec/fixtures/**') }
+
 
       it 'loads 2 files and breaks down into 5 dialogs' do
+        dialogs = LoadDialogs.run_dialogs('botspec_spec', 'spec/fixtures/**')
+
         expect(dialogs.length).to eql(5)
       end
 
       it 'third dialog has 2 interactions' do
+        dialogs = LoadDialogs.run_dialogs('botspec_spec', 'spec/fixtures/**')
+
         dialog = dialogs[2]
-        expect(dialog.interactions.length).to eql(4)
+
         expect(dialog.name).to eql 'the whats3'
+        expect(dialog.interactions.length).to eql(4)
       end
     end
-      
+
   end
 
   describe :create_example do
@@ -89,10 +95,9 @@ RSpec.describe 'load yaml file' do
     it 'creates something (should be an example)' do
       dialog = Dialog.new({:describe => 'desc', :name => 'nome'})
       lex_stub = instance_double('BotSpec::AWS::LexService')
-
       allow(dialog).to receive(:lex_chat).and_return(lex_stub)
-
       interactions = ['request something', 'response here']
+
       assertions = dialog.create_example(interactions)
       expect(assertions.size).to eql 1
       expect(assertions[0]).to eql(RSpec::ExampleGroups::DescNome)

@@ -10,7 +10,7 @@ class LoadDialogs
   def self.run_dialogs botname, dialogs_path
     @@botname = botname
 
-    dialog_paths = Dir.glob(dialogs_path).select{ |e| File.file? e }
+    dialog_paths = Dir.glob(dialogs_path).sort.select{ |e| File.file? e }
     dialog_yamls = dialog_paths.collect{ |dialog_file| Hashie.symbolize_keys YAML.load_file(dialog_file).merge!(file: dialog_file) }
 
     dialog_yamls.collect{ |dialog_content|
