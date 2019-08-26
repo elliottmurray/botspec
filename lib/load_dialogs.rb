@@ -4,7 +4,6 @@ require 'botspec/lex/lex_service.rb'
 require 'rspec'
 
 require "bundler/setup"
-require 'byebug'
 
 class LoadDialogs
 
@@ -61,7 +60,6 @@ class Dialog
     spec = ::RSpec.describe "#{@describe} #{@name}" do
 
       let(:resp) { @@lex_chat.post_message(interactions[0], 'user_id')}
-
       it interactions[0] do
         expect(resp[:message]).to match(interactions[1])
       end

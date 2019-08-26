@@ -1,5 +1,7 @@
+require 'rspec/core/sandbox'
 require 'spec_helper.rb'
 require 'load_dialogs.rb'
+
 
 RSpec.describe 'load yaml file' do
   let(:dialog_hash) { {'what': 'name', 'dialog': ['test utterance', 'second utterance'] } }
@@ -86,33 +88,119 @@ RSpec.describe 'load yaml file' do
 
   describe :create_example do
 
-    after(:each) do
-      @assertions[0].examples.each{ |example| @assertions[0].remove_example example}
+    before(:each) do 
+      RSpec.clear_examples
     end
 
     it 'creates something (should be an example)' do
       dialog = Dialog.new({:describe => 'desc', :name => 'nome'})
       lex_stub = instance_double('BotSpec::AWS::LexService')
-#      expect(lex_stub).to receive(:post_message).and_return({:name => 'nome'})
-
       allow(dialog).to receive(:lex_chat).and_return(lex_stub)
-#      allow(dialog).to receive(:validate_interaction).and_return nil
-
       interactions = ['request something', 'response here']
-      @assertions = dialog.create_example(interactions)
-      expect(@assertions.size).to eql 1
-      expect(@assertions[0]).to eql(RSpec::ExampleGroups::DescNome)
+
+      assertions = dialog.create_example(interactions)
+      expect(assertions.size).to eql 1
+      expect(assertions[0]).to eql(RSpec::ExampleGroups::DescNome)
+    end
+
+    it 'passes when the response from the stubbed chatbot matches our expected response' do
+      dialog = Dialog.new({:describe => 'desc', :name => 'matching'})
+      stubbed_post_text_response = Aws::Lex::Client.new(stub_responses: true).stub_data(:post_text)
+      stubbed_post_text_response.message = "a nice stub response from the chatbot"
+
+      lex_service_with_stubbed_aws_client = BotSpec::AWS::LexService.new({
+                                                                           stub_responses: {
+                                                                            operation_to_stub: :post_text, 
+                                                                            stub_data: stubbed_post_text_response
+                                                                          },
+                                                                          botname: 'TESTCHATBOT'})
+
+      allow(dialog).to receive(:lex_chat).and_return(lex_service_with_stubbed_aws_client)
+
+      interactions = ['a comment expecting a nice stubbed response back', 'a nice stub response from the']
+
+      assertions = []
+
+      RSpec::Core::Sandbox.sandboxed do |config|
+        assertions = dialog.create_example(interactions)
+        expect(assertions.size).to eql 1
+        expect(assertions[0]).to eql(RSpec::ExampleGroups::DescMatching)
+        assertions[0].run()
+      end
+
+      expect(assertions[0].examples.first.execution_result.status).to eq(:passed)
+      expect(assertions[0].examples.first.execution_result.exception).to eq(nil)
+
+      api_requests = lex_service_with_stubbed_aws_client.lex_client.api_requests
+      expect(api_requests.size).to eq(1)
+      expect(api_requests[0][:operation_name]).to eq(:post_text)
+      expect(api_requests[0][:params][:input_text]).to eq("a comment expecting a nice stubbed response back")
     end
 
     it 'fails with regular mismatch text' do
-      skip
-    end
+      dialog = Dialog.new({:describe => 'desc', :name => 'mismatch'})
+      stubbed_post_text_response = Aws::Lex::Client.new(stub_responses: true).stub_data(:post_text)
+      stubbed_post_text_response.message = "mock response here"
 
+      lex_service_with_stubbed_aws_client = BotSpec::AWS::LexService.new({
+                                                                           stub_responses: {
+                                                                            operation_to_stub: :post_text, 
+                                                                            stub_data: stubbed_post_text_response
+                                                                          },
+                                                                          botname: 'TESTCHATBOT'})
+
+      allow(dialog).to receive(:lex_chat).and_return(lex_service_with_stubbed_aws_client)
+
+      interactions = ['initiating comment from user', 'non matching text here']
+
+      assertions = []
+
+      RSpec::Core::Sandbox.sandboxed do |config|
+        assertions = dialog.create_example(interactions)
+        expect(assertions.size).to eql 1
+        expect(assertions[0]).to eql(RSpec::ExampleGroups::DescMismatch)
+        assertions[0].run()
+      end
+
+      expect(assertions[0].examples.first.execution_result.status).to eq(:failed)
+      expect(assertions[0].examples.first.execution_result.exception).to be_a(RSpec::Expectations::ExpectationNotMetError)
+      expect(assertions[0].examples.first.execution_result.exception.message).to eq('expected "mock response here" to match "non matching text here"')
+
+      api_requests = lex_service_with_stubbed_aws_client.lex_client.api_requests
+      expect(api_requests.size).to eq(1)
+      expect(api_requests[0][:operation_name]).to eq(:post_text)
+      expect(api_requests[0][:params][:input_text]).to eq("initiating comment from user")
+    end
 
     it 'succeeds with wildcard exact text' do
-      skip
-    end
+      dialog = Dialog.new({:describe => 'desc', :name => 'wildcard'})
+      stubbed_post_text_response = Aws::Lex::Client.new(stub_responses: true).stub_data(:post_text)
+      stubbed_post_text_response.message = "response THIS WILL STILL MATCH THE REGEX here"
 
+      lex_service_with_stubbed_aws_client = BotSpec::AWS::LexService.new({
+                                                                           stub_responses: {
+                                                                            operation_to_stub: :post_text, 
+                                                                            stub_data: stubbed_post_text_response
+                                                                          },
+                                                                          botname: 'TESTCHATBOT'})
+
+      allow(dialog).to receive(:lex_chat).and_return(lex_service_with_stubbed_aws_client)
+
+      interactions = ['request wildcard something', 'response .* here']
+      assertions = dialog.create_example(interactions)
+
+      expect(assertions.size).to eql 1
+      expect(assertions[0]).to eql(RSpec::ExampleGroups::DescWildcard)
+      assertions[0].run()
+
+      expect(assertions[0].examples.first.execution_result.status).to eq(:passed)
+      api_requests = lex_service_with_stubbed_aws_client.lex_client.api_requests
+
+      expect(api_requests.size).to eq(1)
+      expect(api_requests[0][:operation_name]).to eq(:post_text)
+      expect(api_requests[0][:params][:input_text]).to eq("request wildcard something")
+
+    end
 
   end
 end

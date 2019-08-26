@@ -1,4 +1,5 @@
 
+require 'rspec/core'
 require 'bundler/setup'
 require 'byebug'
 require 'botspec'

@@ -8,6 +8,10 @@ module BotSpec
       end
 
       def initialize(config)
+        if config[:stub_responses]
+          @lex_client = Aws::Lex::Client.new(stub_responses: true)
+          @lex_client.stub_responses(config[:stub_responses][:operation_to_stub], config[:stub_responses][:stub_data])
+        end
         @config = config
         @bot_name = config[:botname]
         @user_id = "botspec-#{SecureRandom.uuid}"

@@ -17,7 +17,6 @@ RUN apk update && apk add  --no-cache git make gcc libc-dev
 ENV SPEC_PATH=$SPEC_PATH
 
 RUN bundle install
-RUN bundle exec thor install lib/cli.thor --as botspec --force 
 
-ENTRYPOINT ["/app/bot/botspec.sh"]
-CMD [] 
+ENTRYPOINT ["sh"]
+
