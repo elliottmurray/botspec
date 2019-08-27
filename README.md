@@ -1,6 +1,6 @@
 # Botspec
 
-[![CircleCI](https://circleci.com/gh/elliottmurray/botspec.svg?style=svg)](https://circleci.com/gh/elliottmurray/botspec)
+[![CircleCI](https://circleci.com/gh/elliottmurray/botspec/tree/master.svg?style=svg)](https://circleci.com/gh/elliottmurray/botspec/tree/master)
 
 Making specs for your bot that can be run in your build pipeline.
 
