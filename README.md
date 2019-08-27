@@ -27,6 +27,10 @@ You will need to have AWS credentials set up. A dot file or env vars normally ap
 * AWS_ACCESS_KEY_ID
 * AWS_SECRET_ACCESS_KEY
 
+or better
+* AWS_REGION
+* AWS_PROFILE
+
 ## Development
 
 After checking out the repo, run `bin/setup` to install dependencies. Then, run `rake spec` to run the tests. You can also run `bin/console` for an interactive prompt that will allow you to experiment.
@@ -55,7 +59,7 @@ Should create a changelog record
 ## Docker
 You can run the command with:
 ```
-docker run -e AWS_REGION -e AWS_DEFAULT_PROFILE -v $HOME/.aws/credentials:/root/.aws/credentials:ro  -v `pwd`/specs:/app/bot/specs -it elliottmurray/botspec <botname> <relative path to fixture>
+docker run -e AWS_REGION -e AWS_PROFILE -v $HOME/.aws/credentials:/root/.aws/credentials:ro  -v `pwd`/specs:/app/bot/specs -it elliottmurray/botspec ./botspec.sh <botname> <relative path to fixture>
 ```
 
 Assuming you are in your project root directory and your specs are in the corresponding specs folder

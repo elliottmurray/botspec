@@ -16,7 +16,10 @@ RUN apk update && apk add  --no-cache git make gcc libc-dev
 
 ENV SPEC_PATH=$SPEC_PATH
 
-RUN bundle install
+RUN gem install bundler -v 2.0.2
+
+RUN bundle install --verbose
+RUN bundle exec thor install lib/cli.thor --as botspec --force
 
 ENTRYPOINT ["sh"]
 
