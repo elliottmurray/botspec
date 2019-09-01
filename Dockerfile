@@ -19,7 +19,7 @@ ENV SPEC_PATH=$SPEC_PATH
 RUN gem install bundler -v 2.0.2
 
 RUN bundle install --verbose
-RUN bundle exec thor install lib/cli.thor --as botspec --force
+RUN bundle exec thor install lib/cli.rb --as botspec --force
 
 ENTRYPOINT ["sh"]
 

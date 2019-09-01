@@ -2,7 +2,7 @@
 require 'rspec/core'
 require 'bundler/setup'
 require 'byebug'
-require 'botspec'
+#require 'botspec'
 require 'chatbot_helpers'
 
 RSpec.configure do |config|

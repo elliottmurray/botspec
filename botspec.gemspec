@@ -28,15 +28,12 @@ Gem::Specification.new do |gem|
   gem.files         = Dir.chdir(File.expand_path('..', __FILE__)) do
     `git ls-files -z`.split("\x0").reject { |f| f.match(%r{^(test|spec|features)/}) }
   end
-  gem.bindir        = "exe"
-  #gem.executables   = gem.files.grep(%r{^bin/}).map{ |f| File.basename(f) }
-
-#  gem.executables   = gem.files.grep(%r{^exe/}) { |f| File.basename(f) }
+  #gem.bindir        = "exe"
+  gem.executables = %w(botspec)
   gem.require_paths = ["lib"]
 
   gem.add_runtime_dependency "rspec", "~> 3.0"
   gem.add_runtime_dependency 'term-ansicolor', '~> 1.0'
-  #gem.add_runtime_dependency 'aws-sdk', "~> 3.0.1"
   gem.add_runtime_dependency 'aws-sdk-lex', '~> 1'
   gem.add_runtime_dependency 'aws-sdk-lexmodelbuildingservice', '~> 1'
   gem.add_runtime_dependency 'thor', "~> 0.20.0"
