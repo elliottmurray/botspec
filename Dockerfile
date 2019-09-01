@@ -21,5 +21,6 @@ RUN gem install bundler -v 2.0.2
 RUN bundle install --verbose
 RUN bundle exec thor install lib/cli.rb --as botspec --force
 
-ENTRYPOINT ["sh"]
+CMD ['verify', '-f', 'specs/*', '-n', 'UNNAMED bot'']
+ENTRYPOINT ["bundle", "exec", "botspec"]
 
