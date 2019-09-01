@@ -92,19 +92,31 @@ RSpec.describe 'load yaml file' do
       RSpec.clear_examples
     end
 
-    it 'creates something (should be an example)' do
-      dialog = Dialog.new({:describe => 'desc', :name => 'nome'})
+    it 'creates one example' do
+      interactions = ['request something', 'response here']
+      dialog = Dialog.new({:describe => 'desc', :name => 'nome', :interactions => interactions})
       lex_stub = instance_double('BotSpec::AWS::LexService')
       allow(dialog).to receive(:lex_chat).and_return(lex_stub)
-      interactions = ['request something', 'response here']
 
-      assertions = dialog.create_example(interactions)
-      expect(assertions.size).to eql 1
-      expect(assertions[0]).to eql(RSpec::ExampleGroups::DescNome)
+      assertions = dialog.create_example
+      expect(assertions).to eql(RSpec::ExampleGroups::DescNome)
+    end
+
+    it 'creates one example with 2 expects' do
+
+      interactions = ['request something', 'response here', 'next request', 'later response']
+      dialog = Dialog.new({:describe => 'desc', :name => 'nome', :interactions => interactions})
+      lex_stub = instance_double('BotSpec::AWS::LexService')
+      allow(dialog).to receive(:lex_chat).and_return(lex_stub)
+
+      assertions = dialog.create_example
+      expect(assertions).to eql(RSpec::ExampleGroups::DescNome)
     end
 
     it 'passes when the response from the stubbed chatbot matches our expected response' do
-      dialog = Dialog.new({:describe => 'desc', :name => 'matching'})
+
+      interactions = ['a comment expecting a nice stubbed response back', 'a nice stub response from the']
+      dialog = Dialog.new({:describe => 'desc', :name => 'matching', :interactions => interactions})
       stubbed_post_text_response = Aws::Lex::Client.new(stub_responses: true).stub_data(:post_text)
       stubbed_post_text_response.message = "a nice stub response from the chatbot"
 
@@ -117,19 +129,15 @@ RSpec.describe 'load yaml file' do
 
       allow(dialog).to receive(:lex_chat).and_return(lex_service_with_stubbed_aws_client)
 
-      interactions = ['a comment expecting a nice stubbed response back', 'a nice stub response from the']
-
       assertions = []
 
       RSpec::Core::Sandbox.sandboxed do |config|
-        assertions = dialog.create_example(interactions)
-        expect(assertions.size).to eql 1
-        expect(assertions[0]).to eql(RSpec::ExampleGroups::DescMatching)
-        assertions[0].run()
+        assertions = dialog.create_example()
+        expect(assertions).to eql(RSpec::ExampleGroups::DescMatching)
+        assertions.run()
       end
-
-      expect(assertions[0].examples.first.execution_result.status).to eq(:passed)
-      expect(assertions[0].examples.first.execution_result.exception).to eq(nil)
+      expect(assertions.examples.first.execution_result.status).to eq(:passed)
+      expect(assertions.examples.first.execution_result.exception).to eq(nil)
 
       api_requests = lex_service_with_stubbed_aws_client.lex_client.api_requests
       expect(api_requests.size).to eq(1)
@@ -138,7 +146,8 @@ RSpec.describe 'load yaml file' do
     end
 
     it 'fails with regular mismatch text' do
-      dialog = Dialog.new({:describe => 'desc', :name => 'mismatch'})
+      interactions = ['initiating comment from user', 'non matching text here']
+      dialog = Dialog.new({:describe => 'desc', :name => 'mismatch', :interactions => interactions})
       stubbed_post_text_response = Aws::Lex::Client.new(stub_responses: true).stub_data(:post_text)
       stubbed_post_text_response.message = "mock response here"
 
@@ -151,20 +160,17 @@ RSpec.describe 'load yaml file' do
 
       allow(dialog).to receive(:lex_chat).and_return(lex_service_with_stubbed_aws_client)
 
-      interactions = ['initiating comment from user', 'non matching text here']
-
-      assertions = []
+      assertions = nil 
 
       RSpec::Core::Sandbox.sandboxed do |config|
-        assertions = dialog.create_example(interactions)
-        expect(assertions.size).to eql 1
-        expect(assertions[0]).to eql(RSpec::ExampleGroups::DescMismatch)
-        assertions[0].run()
+        assertions = dialog.create_example
+        expect(assertions).to eql(RSpec::ExampleGroups::DescMismatch)
+        assertions.run()
       end
 
-      expect(assertions[0].examples.first.execution_result.status).to eq(:failed)
-      expect(assertions[0].examples.first.execution_result.exception).to be_a(RSpec::Expectations::ExpectationNotMetError)
-      expect(assertions[0].examples.first.execution_result.exception.message).to eq('expected "mock response here" to match "non matching text here"')
+      expect(assertions.examples.first.execution_result.status).to eq(:failed)
+      expect(assertions.examples.first.execution_result.exception).to be_a(RSpec::Expectations::ExpectationNotMetError)
+      expect(assertions.examples.first.execution_result.exception.message).to eq('expected "mock response here" to match "non matching text here"')
 
       api_requests = lex_service_with_stubbed_aws_client.lex_client.api_requests
       expect(api_requests.size).to eq(1)
@@ -173,7 +179,9 @@ RSpec.describe 'load yaml file' do
     end
 
     it 'succeeds with wildcard exact text' do
-      dialog = Dialog.new({:describe => 'desc', :name => 'wildcard'})
+
+      interactions = ['request wildcard something', 'response .* here']
+      dialog = Dialog.new({:describe => 'desc', :name => 'wildcard', :interactions => interactions})
       stubbed_post_text_response = Aws::Lex::Client.new(stub_responses: true).stub_data(:post_text)
       stubbed_post_text_response.message = "response THIS WILL STILL MATCH THE REGEX here"
 
@@ -186,14 +194,12 @@ RSpec.describe 'load yaml file' do
 
       allow(dialog).to receive(:lex_chat).and_return(lex_service_with_stubbed_aws_client)
 
-      interactions = ['request wildcard something', 'response .* here']
-      assertions = dialog.create_example(interactions)
+      assertions = dialog.create_example
 
-      expect(assertions.size).to eql 1
-      expect(assertions[0]).to eql(RSpec::ExampleGroups::DescWildcard)
-      assertions[0].run()
+      expect(assertions).to eql(RSpec::ExampleGroups::DescWildcard)
+      assertions.run()
 
-      expect(assertions[0].examples.first.execution_result.status).to eq(:passed)
+      expect(assertions.examples.first.execution_result.status).to eq(:passed)
       api_requests = lex_service_with_stubbed_aws_client.lex_client.api_requests
 
       expect(api_requests.size).to eq(1)

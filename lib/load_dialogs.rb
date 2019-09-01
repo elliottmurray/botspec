@@ -16,8 +16,6 @@ class LoadDialogs
     dialog_yamls.collect{ |dialog_content|
       dialog_content[:dialogs].collect{ |dialog|
         Dialog.new({describe: dialog_content[:description], name: dialog[:what], interactions:  dialog[:dialog], file: dialog_content[:file]})
-      }.each{ |dialog|
-        dialog.create_example_group
       }
     }.flatten
   end
@@ -45,29 +43,23 @@ class Dialog
     @lex_chat ||= BotSpec::AWS::LexService.new({botname: LoadDialogs.botname})
   end
 
-  def create_example_group()
-    @examples = create_example(@interactions).flatten
-  end
-
-  def examples
-    @examples
-  end
-
-  def create_example(interactions, examples=[])
-    return if interactions.size == 0
+  def create_example()
+    return if @interactions.size == 0
+    interactions = @interactions
 
     @@lex_chat = lex_chat()
-    spec = ::RSpec.describe "#{@describe} #{@name}" do
+    ::RSpec.describe "#{@describe} #{@name}" do
 
-      let(:resp) { @@lex_chat.post_message(interactions[0], 'user_id')}
-      it interactions[0] do
-        expect(resp[:message]).to match(interactions[1])
+      it @name do
+        while interactions.size > 1 do
+          resp = @@lex_chat.post_message(interactions[0], 'user_id')
+          expect(resp[:message]).to match(interactions[1])
+          interactions = interactions.drop(2)          
+        end
+
+        resp = @@lex_chat.post_message(interactions[0], 'user_id') if interactions.size == 1
       end
     end
 
-    examples << spec
-    create_example(interactions.drop(2), examples)
-
-    examples
   end
 end
