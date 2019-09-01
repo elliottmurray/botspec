@@ -1,0 +1,6 @@
+#!/usr/bin/env ruby -wU
+
+require 'cli'
+
+Botspec::CLI.start( ARGV )
+

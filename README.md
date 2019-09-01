@@ -39,7 +39,8 @@ To install this gem onto your local machine, run `bundle exec rake install`. To 
 
 ## Running a command
 To install run
-```thor install lib/cli.thor --as botspec --force
+```
+thor install lib/cli.thor --as botspec --force
 ```
 Then you can run
 
