@@ -52,12 +52,12 @@ class Dialog
 
       it @name do
         while interactions.size > 1 do
-          resp = @@lex_chat.post_message(interactions[0], 'user_id')
+          resp = @@lex_chat.post_message(interactions[0])
           expect(resp[:message]).to match(interactions[1])
           interactions = interactions.drop(2)          
         end
 
-        resp = @@lex_chat.post_message(interactions[0], 'user_id') if interactions.size == 1
+        resp = @@lex_chat.post_message(interactions[0]) if interactions.size == 1
       end
     end
 
