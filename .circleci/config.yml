@@ -86,6 +86,14 @@ jobs:
 
 workflows:
   version: 2
+  build_branch:
+    jobs:
+      - build:
+          filters:
+            branches:
+              ignore:
+                - master
+
   build_and_publish:
     jobs:
       - build
@@ -108,3 +116,5 @@ workflows:
             tags:
               ignore:
                 - /^v.*/
+
+
