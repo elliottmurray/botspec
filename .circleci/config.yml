@@ -100,16 +100,16 @@ workflows:
             branches:
               ignore: /.*/
             tags:
-              only: /^v.*/
+              only: /^.*/ 
 
       - publish:
           requires:
             - build
           filters:
             branches:
-              ignore: /.*/
+              ignore: 
             tags:
-              only: /^v.*/
+              only: /^.*/
 
   bump:
     jobs:

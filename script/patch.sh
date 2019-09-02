@@ -3,7 +3,7 @@ set -e
 
 tag=`git name-rev --tags --name-only $(git rev-parse HEAD)`
 
-if [ $tag != 'undefined' ] 
+if [ $tag == undefined ] 
 then
   echo "Creating a commit for bumping purposes"
  
