@@ -1,7 +1,15 @@
 #!/bin/bash
 set -e
 
-RELEASE_SCRIPT="$( dirname "${BASH_SOURCE[0]}" )"/release.sh
-MODE="patch"
+tag=`git name-rev --tags --name-only $(git rev-parse HEAD)`
 
-source $RELEASE_SCRIPT
+if [ $tag == 'undefined' ] 
+then
+  echo "Creating a commit for bumping purposes"
+  RELEASE_SCRIPT="$( dirname "${BASH_SOURCE[0]}" )"/release.sh
+  MODE="patch"
+  source $RELEASE_SCRIPT
+fi
+
+
+

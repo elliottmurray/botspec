@@ -98,20 +98,30 @@ workflows:
       - build:
           filters:
             branches:
-              only: master
-      - publish:
+              ignore: /.*/
+            tags:
+              only: /^v.*/
+
+     - publish:
           requires:
             - build
           filters:
+            branches:
+              ignore: /.*/
             tags:
               only: /^v.*/
+
+  bump:
+    jobs:
+      - build:
+          filters:
+            branches:
+              only: master
       - bump:
           requires:
             - build
           filters:
             branches:
               only: master
-            tags:
-              ignore: /^v.*/
 
 
