@@ -45,13 +45,9 @@ jobs:
           name: Gem Release
           command: |
             bundle install --jobs=4 --retry=3 --path vendor/bundle
-            git config user.email "elliottmurray@gmail.com"
-            git config user.name "Circleci"
-            git config --global push.default simple
-            git push --set-upstream origin $CIRCLE_BRANCH
             .circleci/setup-rubygems.sh
+            bundle exec rake release
 
-            script/patch.sh
 
       - run:
           name: Docker Release
@@ -71,14 +67,13 @@ jobs:
       - checkout
 
       - run:
-          name: Gem Release
+          name: Bump 
           command: |
             bundle install --jobs=4 --retry=3 --path vendor/bundle
             git config user.email "elliottmurray@gmail.com"
             git config user.name "Circleci"
             git config --global push.default simple
             git push --set-upstream origin $CIRCLE_BRANCH
-            .circleci/setup-rubygems.sh
 
             script/patch.sh
 
@@ -89,32 +84,29 @@ workflows:
   build_branch:
     jobs:
       - build:
-          filters:
-            branches:
-              ignore:
-                - master
+        filters:
+          branches:
+            ignore: master
 
   build_and_publish:
     jobs:
-      - build
+      - build:
+        filters:
+          branches:
+            only: master
       - publish:
-          requires:
-            - build
-          filters:
-            branches:
-              only:
-                - master
-            tags:
-              only: /^v*/
+        requires:
+          - build
+        filters:
+          tags:
+            only: /^v.*/
       - bump:
-          requires:
-            - build
-          filters:
-            branches:
-              only:
-                - master
-            tags:
-              ignore:
-                - /^v*/
+        requires:
+          - build
+        filters:
+          branches:
+            only: master
+          tags:
+            ignore: /^v.*/
 
 
