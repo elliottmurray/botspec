@@ -100,7 +100,7 @@ workflows:
             branches:
               ignore: /.*/
             tags:
-              only: /^v.*/ 
+              only: /^circleci_current.*/ 
 
       - publish:
           requires:
@@ -109,7 +109,7 @@ workflows:
             branches:
               ignore: 
             tags:
-              only: /^v.*/
+              only: /^circleci_current.*/
 
   bump:
     jobs:
