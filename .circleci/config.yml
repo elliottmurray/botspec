@@ -50,7 +50,7 @@ jobs:
             git config --global push.default simple
             git push --set-upstream origin $CIRCLE_BRANCH
 
-           .circleci/setup-rubygems.sh
+            .circleci/setup-rubygems.sh
             bundle exec rake release
 
 
