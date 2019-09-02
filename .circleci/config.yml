@@ -102,7 +102,7 @@ workflows:
             tags:
               only: /^v.*/
 
-     - publish:
+      - publish:
           requires:
             - build
           filters:
