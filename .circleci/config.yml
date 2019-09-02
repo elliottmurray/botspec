@@ -72,17 +72,19 @@ jobs:
       - checkout
 
       - run:
-          name: Bump 
+          name: Bump
           command: |
             bundle install --jobs=4 --retry=3 --path vendor/bundle
             git config user.email "elliottmurray@gmail.com"
             git config user.name "Circleci"
             git config --global push.default simple
+            git config --global push.followTags true
+
             git push --set-upstream origin $CIRCLE_BRANCH
 
             script/patch.sh
 
-     
+
 
 workflows:
   version: 2
@@ -100,14 +102,14 @@ workflows:
             branches:
               ignore: /.*/
             tags:
-              only: /^circleci_current.*/ 
+              only: /^circleci_current.*/
 
       - publish:
           requires:
             - build
           filters:
             branches:
-              ignore: 
+              ignore:
             tags:
               only: /^circleci_current.*/
 
