@@ -2,7 +2,25 @@
 
 [![CircleCI](https://circleci.com/gh/elliottmurray/botspec/tree/master.svg?style=svg)](https://circleci.com/gh/elliottmurray/botspec/tree/master)
 
-Making specs for your bot that can be run in your build pipeline.
+Making specs for your bot that can be run in your build pipeline. So that you can run some tests against your deployed bot to ensure it has deployed as you expect. Example
+```yaml
+
+description: "simple specs tests"
+
+dialogs:
+  - what: "simple flower test"
+    dialog:
+      - "I would like to order some flowers"
+      - "What type of flowers would you like to order?"
+      - "Tulips"
+      - "What day do you want the Tulips to be picked up?"
+      - "20th December"
+      - "Pick up the Tulips at what time on .*-12-20?"
+      - "noon"
+      - "Okay, your Tulips will be ready for pickup by 12:00 on .*-12-20.  Does this sound okay?"
+      - "yes"
+
+```
 
 ## Installation
 
