@@ -45,7 +45,12 @@ jobs:
           name: Gem Release
           command: |
             bundle install --jobs=4 --retry=3 --path vendor/bundle
-            .circleci/setup-rubygems.sh
+            git config user.email "elliottmurray@gmail.com"
+            git config user.name "Circleci"
+            git config --global push.default simple
+            git push --set-upstream origin $CIRCLE_BRANCH
+
+           .circleci/setup-rubygems.sh
             bundle exec rake release
 
 
