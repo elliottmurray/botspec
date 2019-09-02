@@ -100,7 +100,7 @@ workflows:
             branches:
               ignore: /.*/
             tags:
-              only: /^.*/ 
+              only: /^v.*/ 
 
       - publish:
           requires:
@@ -109,7 +109,7 @@ workflows:
             branches:
               ignore: 
             tags:
-              only: /^.*/
+              only: /^v.*/
 
   bump:
     jobs:
