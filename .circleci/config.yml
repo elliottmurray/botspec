@@ -48,7 +48,7 @@ jobs:
             git config user.email "elliottmurray@gmail.com"
             git config user.name "Circleci"
             git config --global push.default simple
-            git push --set-upstream origin master
+            git push --set-upstream origin circleci_current
 
             .circleci/setup-rubygems.sh
             bundle exec rake release
