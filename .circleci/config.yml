@@ -114,13 +114,7 @@ workflows:
 
   bump:
     jobs:
-      - build:
-          filters:
-            branches:
-              only: master
       - bump:
-          requires:
-            - build
           filters:
             branches:
               only: master
