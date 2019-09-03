@@ -11,7 +11,7 @@ git add lib/botspec/version.rb CHANGELOG.md
 git commit -m "chore(release): version $(ruby -r ./lib/botspec/version.rb -e "puts Botspec::VERSION")"
 git tag -f circleci_current
 #git push
-git push origin --all
+git push origin --follow-tags
 
 
 #bundle exec rake release
