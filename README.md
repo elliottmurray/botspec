@@ -40,14 +40,15 @@ To install this gem onto your local machine, run `bundle exec rake install`. To 
 ## Running a command
 To install run
 ```
-thor install lib/cli.thor --as botspec --force
+thor install lib/cli.rb --as botspec --force
 ```
 Then you can run
 
 ```
-thor cli:verify -f specs/simple_dialog.yaml
+thor cli:verify -f 'specs/simple_dialog.yaml' -n NAME_OF BOT # path should be a string
 ```
 
+Note that you can pass in a path but put it in a quote or it gets expanded to an array and breaks the cli.
 
 ## Publishing
 To publish run
