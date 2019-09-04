@@ -1,3 +1,3 @@
 module Botspec
-  VERSION = "0.4.58"
+  VERSION = "0.4.59"
 end
