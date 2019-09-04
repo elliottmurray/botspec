@@ -9,9 +9,8 @@ module Botspec
   class CLI < Thor
 
     desc 'verify', "Verify a chat suite"
-    method_option :dialogs, aliases: "-f", desc: "Yaml file containing dialogs", :required => true
+    method_option :dialogs, aliases: "-f", desc: "Path to yaml dialogs", :required => true
     method_option :botname, aliases: "-n", desc: "The name of the Amazon Web Services Lex chatbot"
-
     def verify()
       dialogs = options[:dialogs]
 
